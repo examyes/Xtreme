@@ -19,3 +19,12 @@
 *.exe
 *.out
 *.app
+/XASM/XASM.sdf
+/XASM/Debug
+/XASM/XASM/Debug
+/XC/XC.sdf
+/XC/Debug
+/XC/XC/Debug
+/XVM/XVM.sdf
+/XVM/Debug
+/XVM/XVM/Debug
