@@ -75,10 +75,16 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="OutOfRangeError.h" />
+    <ClInclude Include="SourceCodeHolder.h" />
+    <ClInclude Include="SourceLine.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="OutOfRangeError.cpp" />
+    <ClCompile Include="SourceCodeHolder.cpp" />
+    <ClCompile Include="SourceLine.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

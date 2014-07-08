@@ -24,12 +24,30 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCodeHolder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceLine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="OutOfRangeError.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="XASM.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCodeHolder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceLine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="OutOfRangeError.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
