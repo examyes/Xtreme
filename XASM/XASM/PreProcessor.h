@@ -1,4 +1,7 @@
 #pragma once
+
+//Ô¤´¦ÀíÆ÷
+
 class PreProcessor
 {
 public:

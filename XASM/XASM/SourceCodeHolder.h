@@ -6,6 +6,8 @@
 using std::string;
 using std::vector;
 
+//源代码文本类，代表一个源代码文本，拆分为行为单位
+
 class SourceCodeHolder
 {
 public:

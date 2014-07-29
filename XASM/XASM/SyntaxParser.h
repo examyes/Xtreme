@@ -1,4 +1,8 @@
 #pragma once
+
+
+//Óï·¨·ÖÎöÆ÷
+
 class SyntaxParser
 {
 public:

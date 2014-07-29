@@ -1,4 +1,8 @@
 #pragma once
+
+
+//´Ê·¨·ÖÎöÆ÷
+
 class LexicalAnalyzer
 {
 public:
