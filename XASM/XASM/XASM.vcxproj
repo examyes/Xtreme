@@ -77,6 +77,7 @@
   <ItemGroup>
     <ClInclude Include="define.h" />
     <ClInclude Include="ICodeExplorer.h" />
+    <ClInclude Include="IToken.h" />
     <ClInclude Include="LexicalAnalyzer.h" />
     <ClInclude Include="ObjectCodeGenerator.h" />
     <ClInclude Include="OutOfRangeError.h" />
@@ -87,9 +88,11 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SyntaxParser.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TokenStream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ICodeExplorer.cpp" />
+    <ClCompile Include="IToken.cpp" />
     <ClCompile Include="LexicalAnalyzer.cpp" />
     <ClCompile Include="ObjectCodeGenerator.cpp" />
     <ClCompile Include="OutOfRangeError.cpp" />
@@ -102,6 +105,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SyntaxParser.cpp" />
+    <ClCompile Include="TokenStream.cpp" />
     <ClCompile Include="XASM.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
