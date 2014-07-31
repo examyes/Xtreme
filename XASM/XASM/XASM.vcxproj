@@ -75,6 +75,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="define.h" />
     <ClInclude Include="ICodeExplorer.h" />
     <ClInclude Include="LexicalAnalyzer.h" />
     <ClInclude Include="ObjectCodeGenerator.h" />

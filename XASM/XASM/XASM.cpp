@@ -13,7 +13,7 @@ using namespace std;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	SourceCodeHolder srcHolder = SourceLoader::loadSourceFile(std::string("SourceLoader.cpp"));
+	SourceCodeHolder srcHolder = SourceLoader::loadSourceFile(std::string("test.xasm"));
 	srcHolder = PreProcessor::preProcess(srcHolder);
 
 	SourceCodeHolder::Iterator itor = srcHolder.begin();

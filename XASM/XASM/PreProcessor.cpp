@@ -20,22 +20,55 @@ SourceCodeHolder PreProcessor::preProcess(SourceCodeHolder& preHolder)
 	SourceCodeHolder::Iterator itor = preHolder.begin();
 	while(itor != preHolder.end())
 	{
-		std::string strLine = itor->getSourceText();
-
-		trimString(strLine);
-		if (!isNullLine(strLine))
-		{
-			holder.appendSourceRow(SourceLine(strLine, itor->getRowIndex()));
-		}
+		preProcessLine(holder, itor);
 		++itor;
 	}
 
 	return holder;
 }
 
-std::string PreProcessor::getSingleNotes()
+void PreProcessor::preProcessLine(SourceCodeHolder& holder, SourceCodeHolder::Iterator itor)
 {
-	return std::string(";");
+	std::string strLine = itor->getSourceText();
+
+	deleteNoteString(strLine);
+	trimString(strLine);	
+	if (!isNullLine(strLine))
+	{	
+		holder.appendSourceRow(SourceLine(strLine, itor->getRowIndex()));
+	}
+}
+
+void PreProcessor::deleteNoteString(std::string& str)
+{
+	bool bInString = false;
+
+	for(size_t index = 0; index < str.size(); ++index)
+	{
+		char ch = str.at(index);
+		if (isStringNoteChar(ch))
+		{
+			bInString = !bInString;
+		}
+		else if (isSingleNoteChar(ch))
+		{
+			if (!bInString)
+			{
+				str = str.substr(0, index);
+				return ;
+			}
+		}
+	}
+}
+
+bool PreProcessor::isSingleNoteChar(char ch)
+{
+	return ch == ';';
+}
+
+bool PreProcessor::isStringNoteChar(char ch)
+{
+	return ch == '"';
 }
 
 bool PreProcessor::isNullLine(std::string strLine)
@@ -47,7 +80,17 @@ void PreProcessor::trimString(std::string& str)
 {
 	if (str.size() > 0)
 	{
-		str = str.substr(getFirstNotWhiteCharPos(str), getLastNotWhiteCharPos(str) + 1);
+		int begin = getFirstNotWhiteCharPos(str);
+		int end = getLastNotWhiteCharPos(str) + 1;
+
+		if (-1 != begin)
+		{
+			str = str.substr(begin, end);
+		}
+		else
+		{
+			str = std::string("");
+		}
 	}
 }
 
@@ -58,7 +101,7 @@ bool PreProcessor::isWhiteChar(char ch)
 
 int PreProcessor::getFirstNotWhiteCharPos(std::string& str)
 {
-	for (int index = 0;index < str.size();++index)
+	for (int index = 0; index < str.size(); ++index)
 	{
 		if (!isWhiteChar(str.at(index)))
 		{
