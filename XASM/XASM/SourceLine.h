@@ -5,11 +5,11 @@ using std::string;
 
 //Ô´´úÂëÐÐ
 
-class SourceLine
+class CSourceLine
 {
 public:
-	SourceLine(string strLine,unsigned int iRowIndex);
-	~SourceLine(void);
+	CSourceLine(string strLine,unsigned int iRowIndex);
+	~CSourceLine(void);
 
 public:
 	string getSourceText();

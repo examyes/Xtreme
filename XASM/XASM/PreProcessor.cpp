@@ -1,19 +1,20 @@
-#include "StdAfx.h"
 #include "PreProcessor.h"
 #include <iostream>
 
-PreProcessor::PreProcessor(void)
+#include "StringUtils.h"
+
+CPreProcessor::CPreProcessor(void)
 {
 
 }
 
 
-PreProcessor::~PreProcessor(void)
+CPreProcessor::~CPreProcessor(void)
 {
 
 }
 
-SourceCodeHolder PreProcessor::preProcess(SourceCodeHolder& preHolder)
+SourceCodeHolder CPreProcessor::pre_process(SourceCodeHolder& preHolder)
 {
 	SourceCodeHolder holder;
 
@@ -27,7 +28,7 @@ SourceCodeHolder PreProcessor::preProcess(SourceCodeHolder& preHolder)
 	return holder;
 }
 
-void PreProcessor::preProcessLine(SourceCodeHolder& holder, SourceCodeHolder::Iterator itor)
+void CPreProcessor::preProcessLine(SourceCodeHolder& holder, SourceCodeHolder::Iterator itor)
 {
 	std::string strLine = itor->getSourceText();
 
@@ -35,11 +36,11 @@ void PreProcessor::preProcessLine(SourceCodeHolder& holder, SourceCodeHolder::It
 	trimString(strLine);	
 	if (!isNullLine(strLine))
 	{	
-		holder.appendSourceRow(SourceLine(strLine, itor->getRowIndex()));
+		holder.appendSourceRow(CSourceLine(strLine, itor->getRowIndex()));
 	}
 }
 
-void PreProcessor::deleteNoteString(std::string& str)
+void CPreProcessor::deleteNoteString(std::string& str)
 {
 	bool bInString = false;
 
@@ -61,47 +62,34 @@ void PreProcessor::deleteNoteString(std::string& str)
 	}
 }
 
-bool PreProcessor::isSingleNoteChar(char ch)
+bool CPreProcessor::isSingleNoteChar(char ch)
 {
 	return ch == ';';
 }
 
-bool PreProcessor::isStringNoteChar(char ch)
+bool CPreProcessor::isStringNoteChar(char ch)
 {
 	return ch == '"';
 }
 
-bool PreProcessor::isNullLine(std::string strLine)
+bool CPreProcessor::isNullLine(std::string strLine)
 {
 	return strLine.empty();
 }
 
-void PreProcessor::trimString(std::string& str)
+void CPreProcessor::trimString(std::string& str)
 {
-	if (str.size() > 0)
-	{
-		int begin = getFirstNotWhiteCharPos(str);
-		int end = getLastNotWhiteCharPos(str) + 1;
-
-		if (-1 != begin)
-		{
-			str = str.substr(begin, end);
-		}
-		else
-		{
-			str = std::string("");
-		}
-	}
+	str = XASM::trim(str);
 }
 
-bool PreProcessor::isWhiteChar(char ch)
+bool CPreProcessor::isWhiteChar(char ch)
 {
 	return (ch == ' ') || (ch == '\t');
 }
 
-int PreProcessor::getFirstNotWhiteCharPos(std::string& str)
+int CPreProcessor::getFirstNotWhiteCharPos(std::string& str)
 {
-	for (int index = 0; index < str.size(); ++index)
+	for (std::string::size_type index = 0; index < str.size(); ++index)
 	{
 		if (!isWhiteChar(str.at(index)))
 		{
@@ -112,7 +100,7 @@ int PreProcessor::getFirstNotWhiteCharPos(std::string& str)
 	return -1;
 }
 
-int PreProcessor::getLastNotWhiteCharPos(std::string& str)
+int CPreProcessor::getLastNotWhiteCharPos(std::string& str)
 {
 	for (int index = str.size() - 1;index >= 0;--index)
 	{

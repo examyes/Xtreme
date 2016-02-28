@@ -1,16 +1,19 @@
 #pragma once
 #include <string>
+
 #include "SourceCodeHolder.h"
 
-//源代码文本加载器，将文本文件加载为预定格式（主要是换行符的处理）
-
-class SourceLoader
+namespace XASM
 {
-public:
-	SourceLoader(void);
-	~SourceLoader(void);
+	class CSourceLoader
+	{
+	public:
+		CSourceLoader(void);
+		~CSourceLoader(void);
 
-public:
-	static SourceCodeHolder loadSourceFile(std::string strFilePath);
-};
+	public:
+		static SourceCodeHolder load_file(std::string& strFilePath);
+	};
+}
+
 

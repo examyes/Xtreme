@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "SourceCodeHolder.h"
 #include "OutOfRangeError.h"
 
@@ -13,7 +12,7 @@ SourceCodeHolder::~SourceCodeHolder(void)
 	m_sourceLineTable.clear();
 }
 
-void SourceCodeHolder::appendSourceRow(const SourceLine& sourceLine)
+void SourceCodeHolder::appendSourceRow(const CSourceLine& sourceLine)
 {
 	m_sourceLineTable.push_back(sourceLine);
 }
@@ -44,7 +43,7 @@ unsigned int SourceCodeHolder::size()
 	return m_sourceLineTable.size();
 }
 
-SourceLine SourceCodeHolder::at(unsigned int index)
+CSourceLine SourceCodeHolder::at(unsigned int index)
 {
 	if (index < m_sourceLineTable.size())
 	{

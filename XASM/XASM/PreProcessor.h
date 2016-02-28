@@ -1,17 +1,16 @@
 #pragma once
+
 #include <string>
 #include "SourceCodeHolder.h"
 
-//预处理器，主要作用是删除注释与去掉空行
-
-class PreProcessor
+class CPreProcessor
 {
 public:
-	PreProcessor(void);
-	~PreProcessor(void);
+	CPreProcessor(void);
+	~CPreProcessor(void);
 
 public:
-	static SourceCodeHolder preProcess(SourceCodeHolder& preHolder);
+	static SourceCodeHolder pre_process(SourceCodeHolder& preHolder);
 
 private:
 	static bool isSingleNoteChar(char ch);

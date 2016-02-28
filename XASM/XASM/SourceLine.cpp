@@ -2,7 +2,7 @@
 #include "SourceLine.h"
 
 
-SourceLine::SourceLine(string strLine,unsigned int iRowIndex)
+CSourceLine::CSourceLine(string strLine,unsigned int iRowIndex)
 	:m_strSourceLine(strLine)
 	,m_iRowIndex(iRowIndex)
 {
@@ -10,17 +10,17 @@ SourceLine::SourceLine(string strLine,unsigned int iRowIndex)
 }
 
 
-SourceLine::~SourceLine(void)
+CSourceLine::~CSourceLine(void)
 {
 
 }
 
-string SourceLine::getSourceText()
+string CSourceLine::getSourceText()
 {
 	return m_strSourceLine;
 }
 
-unsigned int SourceLine::getRowIndex()
+unsigned int CSourceLine::getRowIndex()
 {
 	return m_iRowIndex;
 }

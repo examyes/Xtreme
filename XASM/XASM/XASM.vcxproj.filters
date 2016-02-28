@@ -33,9 +33,6 @@
     <ClInclude Include="OutOfRangeError.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SourceLoader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="PreProcessor.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -51,13 +48,37 @@
     <ClInclude Include="ObjectCodeGenerator.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="define.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="TokenStream.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="IToken.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PublicDefine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StringTable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionTable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolTable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="LabelTable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="InstrLookupTable.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -75,9 +96,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="OutOfRangeError.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceLoader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PreProcessor.cpp">
@@ -99,6 +117,27 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="IToken.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StringTable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionTable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolTable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="LabelTable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="InstrLookupTable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

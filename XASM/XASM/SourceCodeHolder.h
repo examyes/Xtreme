@@ -14,18 +14,18 @@ public:
 	SourceCodeHolder(void);
 	~SourceCodeHolder(void);
 
-	typedef SourceLine* Iterator;
+	typedef CSourceLine* Iterator;
 
 public:
-	void appendSourceRow(const SourceLine& sourceLine);
+	void appendSourceRow(const CSourceLine& sourceLine);
 
 	Iterator begin();
 	Iterator end();
 
 	unsigned int size();
-	SourceLine at(unsigned int index);
+	CSourceLine at(unsigned int index);
 
 private:
-	vector<SourceLine> m_sourceLineTable;
+	vector<CSourceLine> m_sourceLineTable;
 };
 

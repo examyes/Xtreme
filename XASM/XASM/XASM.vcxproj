@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,12 +20,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -45,7 +47,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -75,7 +77,10 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="define.h" />
+    <ClInclude Include="FunctionTable.h" />
+    <ClInclude Include="InstrLookupTable.h" />
+    <ClInclude Include="LabelTable.h" />
+    <ClInclude Include="PublicDefine.h" />
     <ClInclude Include="ICodeExplorer.h" />
     <ClInclude Include="IToken.h" />
     <ClInclude Include="LexicalAnalyzer.h" />
@@ -86,13 +91,20 @@
     <ClInclude Include="SourceLine.h" />
     <ClInclude Include="SourceLoader.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="StringTable.h" />
+    <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="SymbolTable.h" />
     <ClInclude Include="SyntaxParser.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TokenStream.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FunctionTable.cpp" />
     <ClCompile Include="ICodeExplorer.cpp" />
+    <ClCompile Include="InstrLookupTable.cpp" />
     <ClCompile Include="IToken.cpp" />
+    <ClCompile Include="LabelTable.cpp" />
     <ClCompile Include="LexicalAnalyzer.cpp" />
     <ClCompile Include="ObjectCodeGenerator.cpp" />
     <ClCompile Include="OutOfRangeError.cpp" />
@@ -104,6 +116,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StringTable.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="SymbolTable.cpp" />
     <ClCompile Include="SyntaxParser.cpp" />
     <ClCompile Include="TokenStream.cpp" />
     <ClCompile Include="XASM.cpp" />
