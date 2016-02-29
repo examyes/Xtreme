@@ -88,7 +88,6 @@
     <ClInclude Include="OutOfRangeError.h" />
     <ClInclude Include="PreProcessor.h" />
     <ClInclude Include="SourceCodeHolder.h" />
-    <ClInclude Include="SourceLine.h" />
     <ClInclude Include="SourceLoader.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringTable.h" />
@@ -110,7 +109,6 @@
     <ClCompile Include="OutOfRangeError.cpp" />
     <ClCompile Include="PreProcessor.cpp" />
     <ClCompile Include="SourceCodeHolder.cpp" />
-    <ClCompile Include="SourceLine.cpp" />
     <ClCompile Include="SourceLoader.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

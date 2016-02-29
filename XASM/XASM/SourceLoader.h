@@ -7,12 +7,12 @@ namespace XASM
 {
 	class CSourceLoader
 	{
-	public:
-		CSourceLoader(void);
-		~CSourceLoader(void);
+	private:
+		CSourceLoader(void) {};
+		~CSourceLoader(void) {};
 
 	public:
-		static SourceCodeHolder load_file(std::string& strFilePath);
+		static CSourceCodeHolder load_file(std::string& file_path);
 	};
 }
 

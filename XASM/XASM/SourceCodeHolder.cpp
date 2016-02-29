@@ -1,54 +1,85 @@
 #include "SourceCodeHolder.h"
-#include "OutOfRangeError.h"
 
-SourceCodeHolder::SourceCodeHolder(void)
+namespace XASM
 {
-	m_sourceLineTable.clear();
-}
-
-
-SourceCodeHolder::~SourceCodeHolder(void)
-{
-	m_sourceLineTable.clear();
-}
-
-void SourceCodeHolder::appendSourceRow(const CSourceLine& sourceLine)
-{
-	m_sourceLineTable.push_back(sourceLine);
-}
-
-SourceCodeHolder::Iterator SourceCodeHolder::begin()
-{
-	if (0 != m_sourceLineTable.size())
+	namespace detail
 	{
-		return &m_sourceLineTable.at(0);
+		void HolderImp::append(string& line, size_t row)
+		{
+			auto line_ptr = std::make_shared<CSourceCodeLine>(line, row);
+			append(line_ptr);
+		}
+
+		void HolderImp::append(shared_ptr<CSourceCodeLine>& line_ptr)
+		{
+			m_code.push_back(line_ptr);
+		}
+
+
+		HolderImp::iterator HolderImp::begin()
+		{
+			return m_code.begin();
+		}
+
+		HolderImp::iterator HolderImp::end()
+		{
+			return m_code.end();
+		}
+
+		size_t HolderImp::row_count()
+		{
+			return m_code.size();
+		}
+
+		shared_ptr<CSourceCodeLine> HolderImp::at(size_t row)
+		{
+			if (row < m_code.size())
+			{
+				return m_code.at(row);
+			}
+
+			return shared_ptr<CSourceCodeLine>(NULL);
+		}
+
+		shared_ptr<CSourceCodeLine> HolderImp::operator[](size_t row)
+		{
+			return m_code[row];
+		}
 	}
 
-	return NULL;
-}
-
-SourceCodeHolder::Iterator SourceCodeHolder::end()
-{
-	if (0 != m_sourceLineTable.size())
+	void CSourceCodeHolder::append(string& line, size_t row)
 	{
-		Iterator itor = &m_sourceLineTable.at(m_sourceLineTable.size() - 1);
-		return ++itor;
+		m_holder->append(line, row);
 	}
 
-	return NULL;
-}
-
-unsigned int SourceCodeHolder::size()
-{
-	return m_sourceLineTable.size();
-}
-
-CSourceLine SourceCodeHolder::at(unsigned int index)
-{
-	if (index < m_sourceLineTable.size())
+	void CSourceCodeHolder::append(shared_ptr<CSourceCodeLine>& line_ptr)
 	{
-		return m_sourceLineTable.at(index);
+		m_holder->append(line_ptr);
 	}
-	
-	throw OutOfRangeError(string("the index out of Source Size"));
+
+
+	CSourceCodeHolder::iterator CSourceCodeHolder::begin()
+	{
+		return m_holder->begin();
+	}
+
+	CSourceCodeHolder::iterator CSourceCodeHolder::end()
+	{
+		return m_holder->end();
+	}
+
+	size_t CSourceCodeHolder::row_count()
+	{
+		return m_holder->row_count();
+	}
+
+	shared_ptr<CSourceCodeLine> CSourceCodeHolder::at(size_t row)
+	{
+		return m_holder->at(row);
+	}
+
+	shared_ptr<CSourceCodeLine> CSourceCodeHolder::operator[](size_t row)
+	{
+		return (*m_holder)[row];
+	}
 }

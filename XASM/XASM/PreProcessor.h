@@ -1,29 +1,26 @@
 #pragma once
 
 #include <string>
+using std::string;
+
 #include "SourceCodeHolder.h"
 
-class CPreProcessor
+
+namespace XASM
 {
-public:
-	CPreProcessor(void);
-	~CPreProcessor(void);
+	class CPreProcessor
+	{
+	private:
+		CPreProcessor(void) {};
+		~CPreProcessor(void){};
 
-public:
-	static SourceCodeHolder pre_process(SourceCodeHolder& preHolder);
+	public:
+		static CSourceCodeHolder pre_process(CSourceCodeHolder& pre_holder);
 
-private:
-	static bool isSingleNoteChar(char ch);
-	static bool isStringNoteChar(char ch);
+	private:
+		static string strip_comments(const string& val_str);
+		static string pre_line(const string& val_str);
+	};
+}
 
-	static bool isNullLine(std::string strLine);
-	static void trimString(std::string& str);
-	static bool isWhiteChar(char ch);
-
-	static int getFirstNotWhiteCharPos(std::string& str);
-	static int getLastNotWhiteCharPos(std::string& str);
-
-	static void preProcessLine(SourceCodeHolder& holder, SourceCodeHolder::Iterator itor);
-	static void deleteNoteString(std::string& str);
-};
 

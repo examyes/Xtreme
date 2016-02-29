@@ -1,31 +1,85 @@
 #pragma once
+
 #include <string>
 #include <vector>
-#include "SourceLine.h"
+#include <memory>
 
 using std::string;
 using std::vector;
+using std::shared_ptr;
 
-//源代码文本类，代表一个源代码文本，拆分为行为单位
-
-class SourceCodeHolder
+namespace XASM
 {
-public:
-	SourceCodeHolder(void);
-	~SourceCodeHolder(void);
+	class CSourceCodeLine
+	{
+	private:
+		string m_text;
+		size_t m_row;
 
-	typedef CSourceLine* Iterator;
+	public:
+		CSourceCodeLine(string& line, size_t row)
+			: m_text(line)
+			, m_row(row)
+		{
+		};
+		~CSourceCodeLine(){};
 
-public:
-	void appendSourceRow(const CSourceLine& sourceLine);
+		string text() { return m_text; };
+		size_t row() { return m_row; };
+	};
 
-	Iterator begin();
-	Iterator end();
 
-	unsigned int size();
-	CSourceLine at(unsigned int index);
+	namespace detail
+	{
+		class HolderImp
+		{
+		public:
+			HolderImp(void) {};
+			~HolderImp(void) {};
+			using iterator = vector<shared_ptr<CSourceCodeLine>>::iterator;
 
-private:
-	vector<CSourceLine> m_sourceLineTable;
-};
+		public:
+
+			void append(shared_ptr<CSourceCodeLine>& line_ptr);
+			void append(string& line, size_t row);
+
+			iterator begin();
+			iterator end();
+
+			size_t row_count();
+			shared_ptr<CSourceCodeLine> at(size_t row);
+			shared_ptr<CSourceCodeLine> operator [](size_t row);
+
+		private:
+			vector<shared_ptr<CSourceCodeLine>> m_code;
+		};
+	}
+
+	class CSourceCodeHolder
+	{
+	public:
+		CSourceCodeHolder(void) { 
+			m_holder = std::make_shared<detail::HolderImp>(); 
+		};
+		~CSourceCodeHolder(void) {};
+		using iterator = detail::HolderImp::iterator;
+
+	public:
+
+		void append(shared_ptr<CSourceCodeLine>& line_ptr);
+		void append(string& line, size_t row);
+
+		iterator begin();
+		iterator end();
+
+		size_t row_count();
+		shared_ptr<CSourceCodeLine> at(size_t row);
+		shared_ptr<CSourceCodeLine> operator [](size_t row);
+
+	private:
+		shared_ptr<detail::HolderImp> m_holder;
+	};
+}
+
+
 

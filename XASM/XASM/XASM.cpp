@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 #include "SourceCodeHolder.h"
-#include "SourceLine.h"
+
 #include "OutOfRangeError.h"
 #include "SourceLoader.h"
 #include "PreProcessor.h"
@@ -20,13 +20,13 @@ using namespace XASM;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	SourceCodeHolder srcHolder = CSourceLoader::load_file(std::string("test.xasm"));
+	CSourceCodeHolder srcHolder = CSourceLoader::load_file(std::string("test.xasm"));
 	srcHolder = CPreProcessor::pre_process(srcHolder);
 
-	SourceCodeHolder::Iterator itor = srcHolder.begin();
+	CSourceCodeHolder::iterator itor = srcHolder.begin();
 	while (itor != srcHolder.end())
 	{
-		cout<<itor->getRowIndex()<<":"<<itor->getSourceText()<<endl;
+		cout << (*itor)->row() << ":" << (*itor)->text() << endl;
 		++itor;
 	}
 

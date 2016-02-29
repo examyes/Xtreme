@@ -1,33 +1,21 @@
 #include "SourceLoader.h"
 
 #include <fstream>
-#include "SourceLine.h"
 
 namespace XASM
 {
-	CSourceLoader::CSourceLoader(void)
+	CSourceCodeHolder CSourceLoader::load_file(std::string& file_path)
 	{
+		CSourceCodeHolder holder;
 
-	}
-
-
-	CSourceLoader::~CSourceLoader(void)
-	{
-
-	}
-
-	SourceCodeHolder CSourceLoader::load_file(std::string& strFilePath)
-	{
-		SourceCodeHolder holder;
-
-		unsigned int iRow = 1;
-		std::fstream inFile(strFilePath.c_str());
+		size_t iRow = 1;
+		std::fstream inFile(file_path.c_str());
 		if (inFile)
 		{
 			std::string strLine;
 			while (getline(inFile, strLine))
 			{
-				holder.appendSourceRow(CSourceLine(strLine, iRow));
+				holder.append(strLine, iRow);
 				++iRow;
 			}
 		}
