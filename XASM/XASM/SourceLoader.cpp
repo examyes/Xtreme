@@ -8,15 +8,15 @@ namespace XASM
 	{
 		CSourceCodeHolder holder;
 
-		size_t iRow = 1;
-		std::fstream inFile(file_path.c_str());
-		if (inFile)
+		size_t row = 1;
+		std::fstream in_file(file_path.c_str());
+		if (in_file)
 		{
-			std::string strLine;
-			while (getline(inFile, strLine))
+			std::string val_line;
+			while (getline(in_file, val_line))
 			{
-				holder.append(strLine, iRow);
-				++iRow;
+				holder.append(val_line, row);
+				++row;
 			}
 		}
 

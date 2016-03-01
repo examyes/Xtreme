@@ -6,9 +6,11 @@
 #include <string>
 #include "SourceCodeHolder.h"
 
+#include "PublicDefine.h"
 #include "OutOfRangeError.h"
 #include "SourceLoader.h"
 #include "PreProcessor.h"
+#include "LexicalAnalyzer.h"
 using namespace std;
 
 #include "StringUtils.h"
@@ -36,11 +38,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	//cout << XASM::is_string_float("1-23") << endl;
 	//cout << XASM::is_string_float("12.3") << endl;
 	//cout << XASM::is_string_float("123.") << endl;
+	cout << endl << endl << endl;
 
-	std::map<string, string> t = {
-		{ "1", "2" }
-	};
-
+	CLexicalAnalyzer::Instance()->set_source_holder(srcHolder);
+	while (TOKEN_TYPE_END_OF_STREAM != CLexicalAnalyzer::Instance()->get_next_token())
+	{
+		cout << CLexicalAnalyzer::Instance()->get_curr_lexeme() << endl;
+	}
 
 	return 0;
 }
