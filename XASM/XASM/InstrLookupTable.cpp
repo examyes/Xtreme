@@ -27,7 +27,7 @@ namespace XASM
 		node_ptr->mnemonic = val_mnemonic;
 		node_ptr->op_code = op_code;
 		node_ptr->op_count = op_count;
-		node_ptr->ops.reserve(op_count);
+		node_ptr->ops.resize(op_count);
 
 		m_table.push_back(node_ptr);
 
@@ -36,7 +36,8 @@ namespace XASM
 
 	void CInstrLookupTable::set_op_types(int instr_index, int op_index, OpTypes op_type)
 	{
-		m_table.at(instr_index)->ops.at(op_index) = op_type;
+		shared_ptr<SInstrLookup> inst_ptr = m_table.at(instr_index);
+		inst_ptr->ops[op_index] = op_type;
 	}
 
 	void CInstrLookupTable::init_table()

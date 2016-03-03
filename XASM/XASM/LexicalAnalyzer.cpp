@@ -1,6 +1,7 @@
 #include "LexicalAnalyzer.h"
 
 #include "StringUtils.h"
+#include "InstrLookupTable.h"
 
 namespace XASM
 {
@@ -21,6 +22,7 @@ namespace XASM
 		m_index0 = 0;
 		m_index1 = 0;
 		m_lex_status = EN_LEX_NO_STRING;
+		m_curr_type = TOKEN_TYPE_INVALID;
 	}
 
 	ETokenType CLexicalAnalyzer::get_next_token()
@@ -119,8 +121,121 @@ namespace XASM
 			m_curr_lexeme += m_curr_line->text().at(curr_index);
 		}
 
-		/// 到此处，已解析成一个个的标识符
-		return TOKEN_TYPE_COMMA;
+		m_curr_type = TOKEN_TYPE_INVALID;
+		if (m_curr_lexeme.size() > 1 ||
+			m_curr_lexeme.at(0) != '"')
+		{
+			if (m_lex_status == EN_LEX_IN_STRING)
+			{
+				m_curr_type = TOKEN_TYPE_STRING;
+				return TOKEN_TYPE_STRING;
+			}
+		}
+
+		if (1 == m_curr_lexeme.size())
+		{
+			switch (m_curr_lexeme.at(0))
+			{
+			case '"':
+			{
+						switch (m_lex_status)
+						{
+						case XASM::CLexicalAnalyzer::EN_LEX_NO_STRING:
+							m_lex_status = EN_LEX_IN_STRING;
+							break;
+						case XASM::CLexicalAnalyzer::EN_LEX_IN_STRING:
+							m_lex_status = EN_LEX_END_STRING;
+							break;
+						}
+
+						m_curr_type = TOKEN_TYPE_QUOTE;
+						break;
+			}
+			case ',':
+			{
+						m_curr_type = TOKEN_TYPE_COMMA;
+						break;
+			}
+			case ':':
+			{
+						m_curr_type = TOKEN_TYPE_COLON;
+						break;
+			}
+			case '[':
+			{
+						m_curr_type = TOKEN_TYPE_OPEN_BRACKET;
+						break;
+			}
+			case ']':
+			{
+						m_curr_type = TOKEN_TYPE_CLOSE_BRACKET;
+						break;
+			}
+			case '{':
+			{
+						m_curr_type = TOKEN_TYPE_OPEN_BRACE;
+						break;
+			}
+			case '}':
+			{
+						m_curr_type = TOKEN_TYPE_CLOSE_BRACE;
+						break;
+			}
+			case '\n':
+			{
+						 m_curr_type = TOKEN_TYPE_NEWLINE;
+						 break;
+			}
+			}
+		}
+
+		if (is_string_float(m_curr_lexeme))
+		{
+			m_curr_type = TOKEN_TYPE_FLOAT;
+		}
+
+		if (is_string_int(m_curr_lexeme))
+		{
+			m_curr_type = TOKEN_TYPE_INT;
+		}
+
+		if (is_string_ident(m_curr_lexeme))
+		{
+			m_curr_type = TOKEN_TYPE_IDENTIFY;
+		}
+
+		if ("SETSTACKSIZE" == m_curr_lexeme)
+		{
+			m_curr_type = TOKEN_TYPE_SET_STACKSIZE;
+		}
+
+		if ("Var" == m_curr_lexeme)
+		{
+			m_curr_type = TOKEN_TYPE_VAR;
+		}
+
+		if ("Func" == m_curr_lexeme)
+		{
+			m_curr_type = TOKEN_TYPE_FUNC;
+		}
+
+		if ("Param" == m_curr_lexeme)
+		{
+			m_curr_type = TOKEN_TYPE_PARAM;
+		}
+
+		if ("_Retval" == m_curr_lexeme)
+		{
+			m_curr_type = TOKEN_TYPE_REG_RETVAL;
+		}
+
+		SInstrLookup instr;
+		if (CInstrLookupTable::Instance()->get_instr_by_mnemonic(m_curr_lexeme))
+		{
+			m_curr_type = TOKEN_TYPE_INSTRUCTION;
+		}
+
+		return m_curr_type;
 	}
 
 	bool CLexicalAnalyzer::skip_to_next_line()

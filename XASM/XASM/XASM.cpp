@@ -19,18 +19,12 @@ using namespace XASM;
 
 #include <map>
 #include <string>
+#include <iomanip>
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	CSourceCodeHolder srcHolder = CSourceLoader::load_file(std::string("test.xasm"));
 	srcHolder = CPreProcessor::pre_process(srcHolder);
-
-	CSourceCodeHolder::iterator itor = srcHolder.begin();
-	while (itor != srcHolder.end())
-	{
-		cout << (*itor)->row() << ":" << (*itor)->text() << endl;
-		++itor;
-	}
 
 	//cout << std::boolalpha;
 	//cout << XASM::is_string_float("123") << endl;
@@ -40,10 +34,35 @@ int _tmain(int argc, _TCHAR* argv[])
 	//cout << XASM::is_string_float("123.") << endl;
 	cout << endl << endl << endl;
 
+
+	string s[20] = {
+		"int",
+		"float",
+		"string",
+		"quote",
+		"indentify",
+		"colon",
+		"open_bracket",
+		"close_bracket",
+		"comma",
+		"open_brace",
+		"close_brace",
+		"newline",
+		"instruction",
+		"set_stacksize",
+		"var",
+		"func",
+		"param",
+		"reg_retval",
+		"invalid",
+		"end"
+	};
 	CLexicalAnalyzer::Instance()->set_source_holder(srcHolder);
-	while (TOKEN_TYPE_END_OF_STREAM != CLexicalAnalyzer::Instance()->get_next_token())
+	ETokenType type = CLexicalAnalyzer::Instance()->get_next_token();
+	while (TOKEN_TYPE_END_OF_STREAM != type)
 	{
-		cout << CLexicalAnalyzer::Instance()->get_curr_lexeme() << endl;
+		cout << setw(10) << CLexicalAnalyzer::Instance()->get_curr_lexeme() << "   :" << s[type - 1]<< endl;
+		type = CLexicalAnalyzer::Instance()->get_next_token();
 	}
 
 	return 0;

@@ -30,6 +30,7 @@ namespace XASM
 		size_t m_index1;
 		ELexStatus m_lex_status;
 		string m_curr_lexeme;
+		ETokenType m_curr_type;
 
 	public:
 		ETokenType get_next_token();
