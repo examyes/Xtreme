@@ -23,7 +23,6 @@ namespace XASM
 		void set_func_info(string& val_name, int param_count, int localdata_size);
 		int add(string& val_name, int entry_point);
 
-
 	private:
 		CFunctionTable(){};
 		~CFunctionTable(){};

@@ -258,4 +258,43 @@ namespace XASM
 	{
 		return m_curr_lexeme;
 	}
+
+	size_t CLexicalAnalyzer::get_curr_row()
+	{
+		return m_curr_line->row();
+	}
+
+	char CLexicalAnalyzer::peed_next()
+	{
+		shared_ptr<CSourceCodeLine> tmp_line = m_curr_line;
+		int tmp_index = m_index1;
+
+		if (EN_LEX_IN_STRING != m_lex_status)
+		{
+			while (true)
+			{
+				if (tmp_index >= tmp_line->text().size())
+				{
+					if (tmp_line->row() >= m_source_holder.row_count())
+					{
+						return 0;
+					}
+
+					tmp_line = m_source_holder.at(tmp_line->row());
+					tmp_index = 0;
+
+					continue;
+				}
+
+				if (!is_char_whitespace(tmp_line->text().at(tmp_index)))
+				{
+					break;
+				}
+
+				++tmp_index;
+			}
+		}
+
+		return tmp_line->text().at(tmp_index);
+	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-//词法分析器
+// 词法分析器
 
 #include <string>
 #include <memory>
@@ -35,6 +35,8 @@ namespace XASM
 	public:
 		ETokenType get_next_token();
 		string get_curr_lexeme();
+		size_t get_curr_row();
+		char peed_next();
 
 		bool skip_to_next_line();
 		//void reset();

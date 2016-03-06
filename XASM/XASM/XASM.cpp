@@ -21,6 +21,7 @@ using namespace XASM;
 #include <string>
 #include <iomanip>
 
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	CSourceCodeHolder srcHolder = CSourceLoader::load_file(std::string("test.xasm"));
@@ -61,9 +62,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	ETokenType type = CLexicalAnalyzer::Instance()->get_next_token();
 	while (TOKEN_TYPE_END_OF_STREAM != type)
 	{
-		cout << setw(10) << CLexicalAnalyzer::Instance()->get_curr_lexeme() << "   :" << s[type - 1]<< endl;
+		cout << setw(10) << CLexicalAnalyzer::Instance()->get_curr_lexeme() <<setw(2) << ":" << CLexicalAnalyzer::Instance()->peed_next()<< "   :" << s[type - 1]<< endl;
 		type = CLexicalAnalyzer::Instance()->get_next_token();
 	}
+
 
 	return 0;
 }

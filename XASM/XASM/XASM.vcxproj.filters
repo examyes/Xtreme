@@ -78,6 +78,9 @@
     <ClInclude Include="InstrLookupTable.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ErrorReporter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -132,6 +135,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="InstrLookupTable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ErrorReporter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

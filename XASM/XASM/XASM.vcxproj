@@ -77,6 +77,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ErrorReporter.h" />
     <ClInclude Include="FunctionTable.h" />
     <ClInclude Include="InstrLookupTable.h" />
     <ClInclude Include="LabelTable.h" />
@@ -99,6 +100,7 @@
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ErrorReporter.cpp" />
     <ClCompile Include="FunctionTable.cpp" />
     <ClCompile Include="ICodeExplorer.cpp" />
     <ClCompile Include="InstrLookupTable.cpp" />
