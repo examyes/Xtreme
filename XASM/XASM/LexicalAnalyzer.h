@@ -39,7 +39,7 @@ namespace XASM
 		char peed_next();
 
 		bool skip_to_next_line();
-		//void reset();
+		void reset();
 		void set_source_holder(CSourceCodeHolder& holder);
 
 

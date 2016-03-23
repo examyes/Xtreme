@@ -25,6 +25,24 @@ namespace XASM
 		m_curr_type = TOKEN_TYPE_INVALID;
 	}
 
+	void CLexicalAnalyzer::reset()
+	{
+		/// 区别处理第一行，如果在Loader时统一在最后加一个空行，好处理些
+		if (m_source_holder.row_count() > 0)
+		{
+			m_curr_line = m_source_holder[0];
+		}
+		else
+		{
+			m_curr_line = shared_ptr<CSourceCodeLine>(NULL);
+		}
+
+		m_index0 = 0;
+		m_index1 = 0;
+		m_lex_status = EN_LEX_NO_STRING;
+		m_curr_type = TOKEN_TYPE_INVALID;
+	}
+
 	ETokenType CLexicalAnalyzer::get_next_token()
 	{
 		if (!m_curr_line)
