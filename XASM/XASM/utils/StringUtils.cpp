@@ -14,7 +14,8 @@ namespace XASM
 
 	bool is_char_whitespace(char val_ch)
 	{
-		return isspace(val_ch);
+		return ' ' == val_ch ||
+			'\t' == val_ch;
 	}
 
 	bool is_char_ident(char val_ch)

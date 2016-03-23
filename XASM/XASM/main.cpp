@@ -9,6 +9,7 @@
 #include "./parse/SourceLoader.h"
 #include "./parse/PreProcessor.h"
 #include "./parse/LexicalAnalyzer.h"
+#include "./parse/SyntaxParser.h"
 using namespace std;
 
 #include "./utils/StringUtils.h"
@@ -60,7 +61,7 @@ int main(int argc, char* argv[])
 		cout << setw(10) << i->lexeme << setw(20) << s[i->type - 1]<< endl;
 	}
 
-
+	CSyntaxParser::Instance()->parse(token_stream);
 
 	return 0;
 }

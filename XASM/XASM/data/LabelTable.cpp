@@ -12,7 +12,7 @@ namespace XASM
 		};
 
 		auto itor = std::find_if(m_table.begin(), m_table.end(), find_functor);
-		if (m_table.end() == itor)
+		if (m_table.end() != itor)
 		{
 			return *itor;
 		}

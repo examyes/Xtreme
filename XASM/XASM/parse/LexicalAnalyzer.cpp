@@ -62,6 +62,8 @@ namespace XASM
 		{
 			// 空白符不在字符串中，尝试解析一次
 			parse_lexeme_to_token(row, token_stream);
+
+			// 
 			return;
 		}
 

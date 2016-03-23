@@ -337,7 +337,7 @@ namespace XASM
 		set_op_types(instr_index, 0, OP_FLAG_TYPE_HOST_API_CALL);
 
 		// Pause Duration
-		mnemonic = "Puase";
+		mnemonic = "Pause";
 		instr_index = add(mnemonic, INSTR_PAUSE, 1);
 		set_op_types(instr_index, 0, OP_FLAG_TYPE_INT |
 			OP_FLAG_TYPE_FLOAT |

@@ -123,9 +123,9 @@ namespace XASM
 	/// 查找指令
 	struct SInstrLookup
 	{
-		string mnemonic;			// 助记符
-		int op_code;				// 操作码
-		int op_count;				// 操作数
+		string mnemonic;				// 助记符
+		int op_code;					// 操作码
+		int op_count;					// 操作数
 		vector<OpTypes> ops;			// 操作数列表
 	};
 
@@ -166,4 +166,7 @@ namespace XASM
 		INSTR_PAUSE			= 31,
 		INSTR_EXIT			= 32
 	};
+
+
+#define MAIN_FUNC_NAME				"_Main"		// _Main ()'s name
 }
