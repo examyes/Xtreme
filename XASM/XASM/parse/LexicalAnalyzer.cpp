@@ -60,7 +60,7 @@ namespace XASM
 
 		if (EN_LEX_IN_STRING != m_lex_status && is_char_whitespace(val_ch))
 		{
-			// 空白符不在字符串中，则跳过
+			// 空白符不在字符串中，尝试解析一次
 			parse_lexeme_to_token(row, token_stream);
 			return;
 		}
@@ -81,7 +81,6 @@ namespace XASM
 		{
 			m_lexeme += '\n';
 			parse_lexeme_to_token(row, token_stream);
-			m_lexeme.clear();
 			m_lex_status = EN_LEX_END_STRING;
 		}
 		else if ('\\' == val_ch)
@@ -96,7 +95,6 @@ namespace XASM
 
 			m_lexeme = '"';
 			parse_lexeme_to_token(row, token_stream);
-			m_lexeme.clear();
 			m_lex_status = EN_LEX_END_STRING;
 		}
 		else
@@ -113,7 +111,6 @@ namespace XASM
 			parse_lexeme_to_token(row, token_stream);
 			m_lexeme = '"';
 			parse_lexeme_to_token(row, token_stream);
-			m_lexeme.clear();
 			m_lex_status = EN_LEX_IN_STRING;
 			m_escape_find = false;
 			return;
@@ -124,7 +121,6 @@ namespace XASM
 			parse_lexeme_to_token(row, token_stream);
 			m_lexeme = '\n';
 			parse_lexeme_to_token(row, token_stream);
-			m_lexeme.clear();
 			return;
 		}
 
@@ -133,7 +129,6 @@ namespace XASM
 			parse_lexeme_to_token(row, token_stream);
 			m_lexeme = val_ch;
 			parse_lexeme_to_token(row, token_stream);
-			m_lexeme.clear();
 			return;
 		}
 
@@ -185,15 +180,15 @@ namespace XASM
 			return TOKEN_TYPE_INT;
 		}
 
-		if (is_string_ident(m_lexeme))
-		{
-			return TOKEN_TYPE_IDENTIFY;
-		}
-
 		SInstrLookup instr;
 		if (CInstrLookupTable::Instance()->get_instr_by_mnemonic(m_lexeme))
 		{
 			return TOKEN_TYPE_INSTRUCTION;
+		}
+
+		if (is_string_ident(m_lexeme))
+		{
+			return TOKEN_TYPE_IDENTIFY;
 		}
 
 		return TOKEN_TYPE_INVALID;
