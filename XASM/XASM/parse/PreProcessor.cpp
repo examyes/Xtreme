@@ -13,7 +13,11 @@ namespace XASM
 		auto itor = pre_holder.begin();
 		while (itor != pre_holder.end())
 		{
-			holder.append(pre_line((*itor)->text()), (*itor)->row());
+			auto str_line = pre_line((*itor)->text());
+			if (!str_line.empty())
+			{
+				holder.append(str_line + "\n", (*itor)->row());
+			}
 			++itor;
 		}
 

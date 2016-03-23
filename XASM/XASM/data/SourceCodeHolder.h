@@ -34,7 +34,9 @@ namespace XASM
 		class HolderImp
 		{
 		public:
-			HolderImp(void) {};
+			HolderImp(const string& file_name) 
+				: m_file_name(file_name)
+			{};
 			~HolderImp(void) {};
 			using iterator = vector<shared_ptr<CSourceCodeLine>>::iterator;
 
@@ -50,16 +52,19 @@ namespace XASM
 			shared_ptr<CSourceCodeLine> at(size_t row);
 			shared_ptr<CSourceCodeLine> operator [](size_t row);
 
+			string file_name() const;
+
 		private:
 			vector<shared_ptr<CSourceCodeLine>> m_code;
+			string m_file_name;
 		};
 	}
 
 	class CSourceCodeHolder
 	{
 	public:
-		CSourceCodeHolder(void) { 
-			m_holder = std::make_shared<detail::HolderImp>(); 
+		CSourceCodeHolder(const string& file_name = "") { 
+			m_holder = std::make_shared<detail::HolderImp>(file_name); 
 		};
 		~CSourceCodeHolder(void) {};
 		using iterator = detail::HolderImp::iterator;
@@ -75,6 +80,8 @@ namespace XASM
 		size_t row_count();
 		shared_ptr<CSourceCodeLine> at(size_t row);
 		shared_ptr<CSourceCodeLine> operator [](size_t row);
+
+		string file_name() const;
 
 	private:
 		shared_ptr<detail::HolderImp> m_holder;

@@ -1,318 +1,242 @@
 #include "LexicalAnalyzer.h"
 
+#include <functional>
+#include <map>
+using std::function;
+using std::map;
+
 #include "../utils/StringUtils.h"
 #include "../data/InstrLookupTable.h"
 
 namespace XASM
 {
-	void CLexicalAnalyzer::set_source_holder(CSourceCodeHolder& holder)
+	CLexicalAnalyzer::WalkHelper::WalkHelper(CSourceCodeHolder& holder)
+		: m_src(holder)
+		, m_curr_index(0)
 	{
-		m_source_holder = holder;
-
-		/// 区别处理第一行，如果在Loader时统一在最后加一个空行，好处理些
-		if (m_source_holder.row_count() > 0)
-		{
-			m_curr_line = m_source_holder[0];
-		}
-		else
-		{
-			m_curr_line = shared_ptr<CSourceCodeLine>(NULL);
-		}
-
-		m_index0 = 0;
-		m_index1 = 0;
-		m_lex_status = EN_LEX_NO_STRING;
-		m_curr_type = TOKEN_TYPE_INVALID;
+		m_curr = m_src.begin();
 	}
 
-	void CLexicalAnalyzer::reset()
+	char CLexicalAnalyzer::WalkHelper::next()
 	{
-		/// 区别处理第一行，如果在Loader时统一在最后加一个空行，好处理些
-		if (m_source_holder.row_count() > 0)
+		if (!skip_to_next_line())
 		{
-			m_curr_line = m_source_holder[0];
-		}
-		else
-		{
-			m_curr_line = shared_ptr<CSourceCodeLine>(NULL);
+			return END_CHAR;
 		}
 
-		m_index0 = 0;
-		m_index1 = 0;
-		m_lex_status = EN_LEX_NO_STRING;
-		m_curr_type = TOKEN_TYPE_INVALID;
+		auto val_ch = (*m_curr)->text().at(m_curr_index);
+		m_curr_index++;
+		return val_ch;
 	}
 
-	ETokenType CLexicalAnalyzer::get_next_token()
+	size_t CLexicalAnalyzer::WalkHelper::row()
 	{
-		if (!m_curr_line)
+		return (*m_curr)->row();
+	}
+
+	bool CLexicalAnalyzer::WalkHelper::skip_to_next_line()
+	{
+		if (m_curr == m_src.end())	// 已经到代码末尾
 		{
-			return TOKEN_TYPE_END_OF_STREAM;
+			return false;
 		}
 
-		m_index0 = m_index1;
-
-		// 到达当前行末尾
-		while (m_index0 >= m_curr_line->text().size())
+		if (m_curr_index >= (*m_curr)->text().size())
 		{
-			if (!skip_to_next_line())
-			{
-				return TOKEN_TYPE_END_OF_STREAM;
-			}
+			++m_curr;
+			m_curr_index = 0;
+			return skip_to_next_line();
 		}
 
-		//
+		return true;
+	}
+
+	void CLexicalAnalyzer::analyze_char(char val_ch, size_t row, CTokenStream& token_stream)
+	{
 		if (EN_LEX_END_STRING == m_lex_status)
 		{
 			m_lex_status = EN_LEX_NO_STRING;
 		}
 
-		if (EN_LEX_IN_STRING != m_lex_status)
+		if (EN_LEX_IN_STRING != m_lex_status && is_char_whitespace(val_ch))
 		{
-			/// 不在字符串中，剔除空白先
-			while (true)
-			{
-				if (!is_char_whitespace(m_curr_line->text().at(m_index0)))
-				{
-					break;
-				}
-
-				++m_index0;
-			}
+			// 空白符不在字符串中，则跳过
+			parse_lexeme_to_token(row, token_stream);
+			return;
 		}
 
-		m_index1 = m_index0;
-		while (true)
+		if (EN_LEX_IN_STRING == m_lex_status)
 		{
-			if (EN_LEX_IN_STRING == m_lex_status)
-			{
-				if (m_index1 >= m_curr_line->text().size())
-				{
-					return TOKEN_TYPE_INVALID;
-				}
+			analyze_char_in_string(val_ch, row, token_stream);
+		}
+		else
+		{
+			analyze_char_out_string(val_ch, row, token_stream);
+		}
+	}
 
-				if ('\\' == m_curr_line->text().at(m_index1))
-				{
-					m_index1 += 2;
-					continue;
-				}
+	void CLexicalAnalyzer::analyze_char_in_string(char val_ch, size_t row, CTokenStream& token_stream)
+	{
+		if ('\n' == val_ch)
+		{
+			m_lexeme += '\n';
+			parse_lexeme_to_token(row, token_stream);
+			m_lexeme.clear();
+			m_lex_status = EN_LEX_END_STRING;
+		}
+		else if ('\\' == val_ch)
+		{
+			m_escape_find = true;
+			return;
+		}
+		else if ('"' == val_ch && false == m_escape_find)
+		{
+			//parse_lexeme_to_token(row, token_stream); // 此处不能调用它，会被解析为invalid
+			add_token(row, TOKEN_TYPE_STRING, token_stream);
 
-				if ('"' == m_curr_line->text().at(m_index1))
-				{
-					break;
-				}
-				++m_index1;
-			}
-			else
-			{
-				if (m_index1 >= m_curr_line->text().size())
-				{
-					break;
-				}
+			m_lexeme = '"';
+			parse_lexeme_to_token(row, token_stream);
+			m_lexeme.clear();
+			m_lex_status = EN_LEX_END_STRING;
+		}
+		else
+		{
+			m_lexeme += val_ch;
+			m_escape_find = false;
+		}
+	}
 
-				if (is_char_delimiter(m_curr_line->text().at(m_index1)))
-				{
-					break;
-				}
-				++m_index1;
-			}
+	void CLexicalAnalyzer::analyze_char_out_string(char val_ch, size_t row, CTokenStream& token_stream)
+	{
+		if ('"' == val_ch)
+		{
+			parse_lexeme_to_token(row, token_stream);
+			m_lexeme = '"';
+			parse_lexeme_to_token(row, token_stream);
+			m_lexeme.clear();
+			m_lex_status = EN_LEX_IN_STRING;
+			m_escape_find = false;
+			return;
 		}
 
-		if (0 == (m_index1 - m_index0))
+		if ('\n' == val_ch)
 		{
-			++m_index1;
+			parse_lexeme_to_token(row, token_stream);
+			m_lexeme = '\n';
+			parse_lexeme_to_token(row, token_stream);
+			m_lexeme.clear();
+			return;
 		}
 
-		m_curr_lexeme.clear();
-		for (size_t curr_index = m_index0;
-			curr_index < m_index1;
-			++curr_index)
+		if (is_char_delimiter(val_ch))
 		{
-			if (EN_LEX_IN_STRING == m_lex_status)
-			{
-				if ('\\' == m_curr_line->text().at(curr_index))
-				{
-					continue;
-				}
-			}
-
-			m_curr_lexeme += m_curr_line->text().at(curr_index);
+			parse_lexeme_to_token(row, token_stream);
+			m_lexeme = val_ch;
+			parse_lexeme_to_token(row, token_stream);
+			m_lexeme.clear();
+			return;
 		}
 
-		m_curr_type = TOKEN_TYPE_INVALID;
-		if (m_curr_lexeme.size() > 1 ||
-			m_curr_lexeme.at(0) != '"')
+		m_lexeme += val_ch;
+	}
+
+	void CLexicalAnalyzer::parse_lexeme_to_token(size_t row, CTokenStream& token_stream)
+	{
+		if (m_lexeme.empty())
 		{
-			if (m_lex_status == EN_LEX_IN_STRING)
-			{
-				m_curr_type = TOKEN_TYPE_STRING;
-				return TOKEN_TYPE_STRING;
-			}
+			return;
 		}
 
-		if (1 == m_curr_lexeme.size())
-		{
-			switch (m_curr_lexeme.at(0))
-			{
-			case '"':
-			{
-						switch (m_lex_status)
-						{
-						case XASM::CLexicalAnalyzer::EN_LEX_NO_STRING:
-							m_lex_status = EN_LEX_IN_STRING;
-							break;
-						case XASM::CLexicalAnalyzer::EN_LEX_IN_STRING:
-							m_lex_status = EN_LEX_END_STRING;
-							break;
-						}
+		add_token(row, parse_token_type_from_lexeme(), token_stream);
+		m_lexeme.clear();
+	}
 
-						m_curr_type = TOKEN_TYPE_QUOTE;
-						break;
-			}
-			case ',':
-			{
-						m_curr_type = TOKEN_TYPE_COMMA;
-						break;
-			}
-			case ':':
-			{
-						m_curr_type = TOKEN_TYPE_COLON;
-						break;
-			}
-			case '[':
-			{
-						m_curr_type = TOKEN_TYPE_OPEN_BRACKET;
-						break;
-			}
-			case ']':
-			{
-						m_curr_type = TOKEN_TYPE_CLOSE_BRACKET;
-						break;
-			}
-			case '{':
-			{
-						m_curr_type = TOKEN_TYPE_OPEN_BRACE;
-						break;
-			}
-			case '}':
-			{
-						m_curr_type = TOKEN_TYPE_CLOSE_BRACE;
-						break;
-			}
-			case '\n':
-			{
-						 m_curr_type = TOKEN_TYPE_NEWLINE;
-						 break;
-			}
-			}
+	ETokenType CLexicalAnalyzer::parse_token_type_from_lexeme()
+	{
+		static map<string, ETokenType> string_2_type = {
+			{ "\"", TOKEN_TYPE_QUOTE },
+			{ ",", TOKEN_TYPE_COMMA },
+			{ ":", TOKEN_TYPE_COLON },
+			{ "[", TOKEN_TYPE_OPEN_BRACKET },
+			{ "]", TOKEN_TYPE_CLOSE_BRACKET },
+			{ "{", TOKEN_TYPE_OPEN_BRACE },
+			{ "}", TOKEN_TYPE_CLOSE_BRACE },
+			{ "\n", TOKEN_TYPE_NEWLINE },
+			{ "SETSTACKSIZE", TOKEN_TYPE_SET_STACKSIZE },
+			{ "Var", TOKEN_TYPE_VAR },
+			{ "Func", TOKEN_TYPE_FUNC },
+			{ "Param", TOKEN_TYPE_PARAM },
+			{ "_Retval", TOKEN_TYPE_REG_RETVAL }
+		};
+
+		auto string_2_itor = string_2_type.find(m_lexeme);
+		if (string_2_type.end() != string_2_itor)
+		{
+			return string_2_itor->second;
 		}
 
-		if (is_string_float(m_curr_lexeme))
+		if (is_string_float(m_lexeme))
 		{
-			m_curr_type = TOKEN_TYPE_FLOAT;
+			return TOKEN_TYPE_FLOAT;
 		}
 
-		if (is_string_int(m_curr_lexeme))
+		if (is_string_int(m_lexeme))
 		{
-			m_curr_type = TOKEN_TYPE_INT;
+			return TOKEN_TYPE_INT;
 		}
 
-		if (is_string_ident(m_curr_lexeme))
+		if (is_string_ident(m_lexeme))
 		{
-			m_curr_type = TOKEN_TYPE_IDENTIFY;
-		}
-
-		if ("SETSTACKSIZE" == m_curr_lexeme)
-		{
-			m_curr_type = TOKEN_TYPE_SET_STACKSIZE;
-		}
-
-		if ("Var" == m_curr_lexeme)
-		{
-			m_curr_type = TOKEN_TYPE_VAR;
-		}
-
-		if ("Func" == m_curr_lexeme)
-		{
-			m_curr_type = TOKEN_TYPE_FUNC;
-		}
-
-		if ("Param" == m_curr_lexeme)
-		{
-			m_curr_type = TOKEN_TYPE_PARAM;
-		}
-
-		if ("_Retval" == m_curr_lexeme)
-		{
-			m_curr_type = TOKEN_TYPE_REG_RETVAL;
+			return TOKEN_TYPE_IDENTIFY;
 		}
 
 		SInstrLookup instr;
-		if (CInstrLookupTable::Instance()->get_instr_by_mnemonic(m_curr_lexeme))
+		if (CInstrLookupTable::Instance()->get_instr_by_mnemonic(m_lexeme))
 		{
-			m_curr_type = TOKEN_TYPE_INSTRUCTION;
+			return TOKEN_TYPE_INSTRUCTION;
 		}
 
-		return m_curr_type;
+		return TOKEN_TYPE_INVALID;
 	}
 
-	bool CLexicalAnalyzer::skip_to_next_line()
+	void CLexicalAnalyzer::add_token(size_t row, ETokenType type, CTokenStream& token_stream)
 	{
-		size_t curr_row = m_curr_line->row();
-		if (curr_row >= m_source_holder.row_count())
-		{
-			return false;
-		}
+		SToken val_token;
+		val_token.type = type;
+		val_token.row = row;
+		val_token.file_name = m_file_name;
+		val_token.lexeme = m_lexeme;
 
-		m_curr_line = m_source_holder.at(curr_row);
-		m_index0 = 0;
-		m_index1 = 0;
-		m_curr_lexeme.clear();
+		token_stream.push_back(val_token);
+	}
+
+	CTokenStream CLexicalAnalyzer::analyze(CSourceCodeHolder& src)
+	{
+		CTokenStream token_stream;
 		m_lex_status = EN_LEX_NO_STRING;
-		return true;
-	}
+		m_file_name = src.file_name();
+		m_lexeme.clear();
+		m_escape_find = false;
 
-	string CLexicalAnalyzer::get_curr_lexeme()
-	{
-		return m_curr_lexeme;
-	}
-
-	size_t CLexicalAnalyzer::get_curr_row()
-	{
-		return m_curr_line->row();
-	}
-
-	char CLexicalAnalyzer::peed_next()
-	{
-		shared_ptr<CSourceCodeLine> tmp_line = m_curr_line;
-		int tmp_index = m_index1;
-
-		if (EN_LEX_IN_STRING != m_lex_status)
+		if (src.row_count() > 0)
 		{
-			while (true)
+			WalkHelper w_helper(src);
+			auto val_ch = w_helper.next();
+			while (WalkHelper::END_CHAR != val_ch)
 			{
-				if (tmp_index >= tmp_line->text().size())
-				{
-					if (tmp_line->row() >= m_source_holder.row_count())
-					{
-						return 0;
-					}
-
-					tmp_line = m_source_holder.at(tmp_line->row());
-					tmp_index = 0;
-
-					continue;
-				}
-
-				if (!is_char_whitespace(tmp_line->text().at(tmp_index)))
-				{
-					break;
-				}
-
-				++tmp_index;
+				analyze_char(val_ch, w_helper.row(), token_stream);
+				val_ch = w_helper.next();
 			}
 		}
 
-		return tmp_line->text().at(tmp_index);
+		/// 添加一个结束TOKEN
+		SToken end_token;
+		end_token.file_name = src.file_name();
+		end_token.lexeme = "";
+		end_token.row = 0;
+		end_token.type = TOKEN_TYPE_END_OF_STREAM;
+		token_stream.push_back(end_token);
+
+		return token_stream;
 	}
 }

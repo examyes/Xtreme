@@ -25,14 +25,11 @@ int main(int argc, char* argv[])
 	CSourceCodeHolder srcHolder = CSourceLoader::load_file(std::string("test.xasm"));
 	srcHolder = CPreProcessor::pre_process(srcHolder);
 
-	//cout << std::boolalpha;
-	//cout << XASM::is_string_float("123") << endl;
-	//cout << XASM::is_string_float("-123") << endl;
-	//cout << XASM::is_string_float("1-23") << endl;
-	//cout << XASM::is_string_float("12.3") << endl;
-	//cout << XASM::is_string_float("123.") << endl;
-	cout << endl << endl << endl;
-
+	//for (auto&& i : srcHolder)
+	//{
+	//	cout << i->row() << "  " << i->text().size() << endl;
+	//	cout << i->text() << endl;
+	//}
 
 	string s[20] = {
 		"int",
@@ -56,13 +53,13 @@ int main(int argc, char* argv[])
 		"invalid",
 		"end"
 	};
-	CLexicalAnalyzer::Instance()->set_source_holder(srcHolder);
-	ETokenType type = CLexicalAnalyzer::Instance()->get_next_token();
-	while (TOKEN_TYPE_END_OF_STREAM != type)
+	CTokenStream token_stream = CLexicalAnalyzer::Instance()->analyze(srcHolder);
+
+	for (auto&& i : token_stream)
 	{
-		cout << setw(10) << CLexicalAnalyzer::Instance()->get_curr_lexeme() <<setw(2) << ":" << CLexicalAnalyzer::Instance()->peed_next()<< "   :" << s[type - 1]<< endl;
-		type = CLexicalAnalyzer::Instance()->get_next_token();
+		cout << setw(10) << i->lexeme << setw(20) << s[i->type - 1]<< endl;
 	}
+
 
 
 	return 0;

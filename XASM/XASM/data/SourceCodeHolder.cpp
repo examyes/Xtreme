@@ -45,6 +45,11 @@ namespace XASM
 		{
 			return m_code[row];
 		}
+
+		string HolderImp::file_name() const
+		{
+			return m_file_name;
+		}
 	}
 
 	void CSourceCodeHolder::append(string& line, size_t row)
@@ -81,5 +86,10 @@ namespace XASM
 	shared_ptr<CSourceCodeLine> CSourceCodeHolder::operator[](size_t row)
 	{
 		return (*m_holder)[row];
+	}
+
+	string CSourceCodeHolder::file_name() const
+	{
+		return m_holder->file_name();
 	}
 }

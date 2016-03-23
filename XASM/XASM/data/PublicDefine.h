@@ -34,6 +34,15 @@ namespace XASM
 		TOKEN_TYPE_END_OF_STREAM = 20,		// 属性字符流的尾部
 	};
 
+	/// Token结构
+	struct SToken
+	{
+		ETokenType type;
+		size_t row;
+		string lexeme;
+		string file_name;
+	};
+
 	/// 操作数
 	struct SOperand
 	{

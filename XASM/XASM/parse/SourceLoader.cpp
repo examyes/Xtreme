@@ -6,7 +6,7 @@ namespace XASM
 {
 	CSourceCodeHolder CSourceLoader::load_file(std::string& file_path)
 	{
-		CSourceCodeHolder holder;
+		CSourceCodeHolder holder(file_path);
 
 		size_t row = 1;
 		std::fstream in_file(file_path.c_str());
