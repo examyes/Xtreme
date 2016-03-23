@@ -1,7 +1,6 @@
 // XASM.cpp : 定义控制台应用程序的入口点。
 //
 
-#include "stdafx.h"
 #include <iostream>
 #include <string>
 #include "./data/SourceCodeHolder.h"
@@ -21,7 +20,7 @@ using namespace XASM;
 #include <iomanip>
 
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
 	CSourceCodeHolder srcHolder = CSourceLoader::load_file(std::string("test.xasm"));
 	srcHolder = CPreProcessor::pre_process(srcHolder);

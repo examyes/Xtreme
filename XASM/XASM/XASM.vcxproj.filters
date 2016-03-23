@@ -27,21 +27,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ICodeExplorer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectCodeGenerator.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="TokenStream.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="utils\ErrorReporter.h">
       <Filter>utils</Filter>
     </ClInclude>
@@ -86,21 +71,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="XASM.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ICodeExplorer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectCodeGenerator.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="TokenStream.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="utils\ErrorReporter.cpp">
       <Filter>utils</Filter>
     </ClCompile>
@@ -136,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="parse\SyntaxParser.cpp">
       <Filter>parse</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
