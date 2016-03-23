@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "SourceCodeHolder.h"
+#include "../data/SourceCodeHolder.h"
 
 namespace XASM
 {

@@ -1,7 +1,7 @@
 #include "LexicalAnalyzer.h"
 
-#include "StringUtils.h"
-#include "InstrLookupTable.h"
+#include "../utils/StringUtils.h"
+#include "../data/InstrLookupTable.h"
 
 namespace XASM
 {

@@ -1,10 +1,10 @@
 #include "SyntaxParser.h"
 
 #include "LexicalAnalyzer.h"
-#include "ErrorReporter.h"
-#include "SymbolTable.h"
-#include "FunctionTable.h"
-#include "LabelTable.h"
+#include "../utils/ErrorReporter.h"
+#include "../data/SymbolTable.h"
+#include "../data/FunctionTable.h"
+#include "../data/LabelTable.h"
 
 namespace XASM
 {

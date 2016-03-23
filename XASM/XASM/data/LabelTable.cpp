@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "LabelTable.h"
 
 #include <algorithm>

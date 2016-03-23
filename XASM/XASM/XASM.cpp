@@ -4,16 +4,15 @@
 #include "stdafx.h"
 #include <iostream>
 #include <string>
-#include "SourceCodeHolder.h"
+#include "./data/SourceCodeHolder.h"
 
-#include "PublicDefine.h"
-#include "OutOfRangeError.h"
-#include "SourceLoader.h"
-#include "PreProcessor.h"
-#include "LexicalAnalyzer.h"
+#include "./data/PublicDefine.h"
+#include "./parse/SourceLoader.h"
+#include "./parse/PreProcessor.h"
+#include "./parse/LexicalAnalyzer.h"
 using namespace std;
 
-#include "StringUtils.h"
+#include "./utils/StringUtils.h"
 
 using namespace XASM;
 

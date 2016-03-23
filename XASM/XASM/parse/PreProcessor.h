@@ -3,7 +3,7 @@
 #include <string>
 using std::string;
 
-#include "SourceCodeHolder.h"
+#include "../data/SourceCodeHolder.h"
 
 
 namespace XASM

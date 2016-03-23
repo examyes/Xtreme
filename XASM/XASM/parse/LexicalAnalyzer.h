@@ -6,10 +6,10 @@
 #include <memory>
 using std::string;
 
-#include "utils.h"
-#include "PublicDefine.h"
+#include "../utils/utils.h"
+#include "../data/PublicDefine.h"
 
-#include "SourceCodeHolder.h"
+#include "../data/SourceCodeHolder.h"
 
 namespace XASM
 {

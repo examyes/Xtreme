@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{c3ebdcc8-8c8f-4661-bc84-658637a7e7d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{5ebd0727-c5f3-4929-b1b0-0c0df25e9f1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="parse">
+      <UniqueIdentifier>{95ff324a-44b1-4704-9abf-7b358e231298}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -24,21 +33,6 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SourceCodeHolder.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OutOfRangeError.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="PreProcessor.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="LexicalAnalyzer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SyntaxParser.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ICodeExplorer.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -48,38 +42,47 @@
     <ClInclude Include="TokenStream.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="IToken.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="utils\ErrorReporter.h">
+      <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="PublicDefine.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="utils\StringUtils.h">
+      <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="StringUtils.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="utils\utils.h">
+      <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="SourceLoader.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="data\FunctionTable.h">
+      <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="StringTable.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="data\InstrLookupTable.h">
+      <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="FunctionTable.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="data\LabelTable.h">
+      <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="data\SourceCodeHolder.h">
+      <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="SymbolTable.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="data\StringTable.h">
+      <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="LabelTable.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="data\SymbolTable.h">
+      <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="InstrLookupTable.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="data\PublicDefine.h">
+      <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="ErrorReporter.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="parse\LexicalAnalyzer.h">
+      <Filter>parse</Filter>
+    </ClInclude>
+    <ClInclude Include="parse\PreProcessor.h">
+      <Filter>parse</Filter>
+    </ClInclude>
+    <ClInclude Include="parse\SourceLoader.h">
+      <Filter>parse</Filter>
+    </ClInclude>
+    <ClInclude Include="parse\SyntaxParser.h">
+      <Filter>parse</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -87,21 +90,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="XASM.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCodeHolder.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="OutOfRangeError.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="PreProcessor.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="LexicalAnalyzer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SyntaxParser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ICodeExplorer.cpp">
@@ -113,32 +101,41 @@
     <ClCompile Include="TokenStream.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="IToken.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="utils\ErrorReporter.cpp">
+      <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="StringUtils.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="utils\StringUtils.cpp">
+      <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="SourceLoader.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="data\FunctionTable.cpp">
+      <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="StringTable.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="data\InstrLookupTable.cpp">
+      <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="FunctionTable.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="data\LabelTable.cpp">
+      <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="SymbolTable.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="data\SourceCodeHolder.cpp">
+      <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="LabelTable.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="data\StringTable.cpp">
+      <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="InstrLookupTable.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="data\SymbolTable.cpp">
+      <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="ErrorReporter.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="parse\LexicalAnalyzer.cpp">
+      <Filter>parse</Filter>
+    </ClCompile>
+    <ClCompile Include="parse\PreProcessor.cpp">
+      <Filter>parse</Filter>
+    </ClCompile>
+    <ClCompile Include="parse\SourceLoader.cpp">
+      <Filter>parse</Filter>
+    </ClCompile>
+    <ClCompile Include="parse\SyntaxParser.cpp">
+      <Filter>parse</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

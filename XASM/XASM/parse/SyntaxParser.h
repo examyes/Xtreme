@@ -3,8 +3,8 @@
 
 // Óï·¨·ÖÎöÆ÷
 
-#include "utils.h"
-#include "PublicDefine.h"
+#include "../utils/utils.h"
+#include "../data/PublicDefine.h"
 
 namespace XASM
 {

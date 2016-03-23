@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ErrorReporter.h"
 
 #include <iostream>

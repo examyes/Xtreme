@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "StringUtils.h"
+#include "../utils/StringUtils.h"
 
 namespace XASM
 {
