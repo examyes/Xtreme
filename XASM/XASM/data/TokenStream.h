@@ -13,7 +13,7 @@ namespace XASM
 {
 	namespace detail
 	{
-		class StreamImp
+		class TokenStreamImp
 		{
 		public:
 			using iterator = vector<shared_ptr<SToken>>::const_iterator;
@@ -31,15 +31,15 @@ namespace XASM
 	class CTokenStream
 	{
 	public:
-		using iterator = detail::StreamImp::iterator;
+		using iterator = detail::TokenStreamImp::iterator;
 
 	private:
-		shared_ptr<detail::StreamImp> m_imp;
+		shared_ptr<detail::TokenStreamImp> m_imp;
 		iterator m_curr;
 
 	public:
 		CTokenStream(){
-			m_imp = std::make_shared<detail::StreamImp>();
+			m_imp = std::make_shared<detail::TokenStreamImp>();
 			m_curr = m_imp->begin();
 		};
 

@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClInclude Include="data\FunctionTable.h" />
     <ClInclude Include="data\InstrLookupTable.h" />
+    <ClInclude Include="data\InstrStream.h" />
     <ClInclude Include="data\LabelTable.h" />
     <ClInclude Include="data\PublicDefine.h" />
     <ClInclude Include="data\SourceCodeHolder.h" />
@@ -96,6 +97,7 @@
   <ItemGroup>
     <ClCompile Include="data\FunctionTable.cpp" />
     <ClCompile Include="data\InstrLookupTable.cpp" />
+    <ClCompile Include="data\InstrStream.cpp" />
     <ClCompile Include="data\LabelTable.cpp" />
     <ClCompile Include="data\SourceCodeHolder.cpp" />
     <ClCompile Include="data\StringTable.cpp" />

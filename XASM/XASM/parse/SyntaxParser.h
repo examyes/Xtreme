@@ -7,6 +7,9 @@ using std::string;
 #include "../utils/utils.h"
 #include "../data/PublicDefine.h"
 #include "../data/TokenStream.h"
+#include "../data/InstrStream.h"
+
+/// 继续拆分，将phase1和phase2拆分为两个类
 
 namespace XASM
 {
@@ -27,7 +30,7 @@ namespace XASM
 
 	public:
 		void parse(CTokenStream& token_stream);
-
+		
 	private:
 		CSyntaxParser(void){};
 		~CSyntaxParser(void){};
@@ -41,6 +44,12 @@ namespace XASM
 		bool phase_1_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 		bool phase_1_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 		bool phase_1_default(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+
+		bool parse_phase_2(CTokenStream& token_stream, CInstrStream& instr_stream);
+		bool phase_2_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool phase_2_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool phase_2_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool phase_2_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 	};
 }
 

@@ -4,17 +4,17 @@ namespace XASM
 {
 	namespace detail
 	{
-		void StreamImp::push_back(shared_ptr<SToken>& token_ptr)
+		void TokenStreamImp::push_back(shared_ptr<SToken>& token_ptr)
 		{
 			m_tokens.push_back(token_ptr);
 		}
 
-		StreamImp::iterator StreamImp::begin() const
+		TokenStreamImp::iterator TokenStreamImp::begin() const
 		{
 			return m_tokens.begin();
 		}
 
-		StreamImp::iterator StreamImp::end() const
+		TokenStreamImp::iterator TokenStreamImp::end() const
 		{
 			return m_tokens.end();
 		}

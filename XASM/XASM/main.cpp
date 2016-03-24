@@ -21,6 +21,22 @@ using namespace XASM;
 #include <iomanip>
 
 
+class MyStr
+{
+public:
+	MyStr(string s) :str(s){ }
+private:
+	string str;
+};
+
+class test{
+public:
+	test(string s = " ") :mstr(new MyStr(s)) { }
+	~test(){ delete mstr; }
+private:
+	MyStr *mstr;
+};
+
 int main(int argc, char* argv[])
 {
 	CSourceCodeHolder srcHolder = CSourceLoader::load_file(std::string("test.xasm"));
@@ -61,7 +77,11 @@ int main(int argc, char* argv[])
 		cout << setw(10) << i->lexeme << setw(20) << s[i->type - 1]<< endl;
 	}
 
-	CSyntaxParser::Instance()->parse(token_stream);
+	//CSyntaxParser::Instance()->parse(token_stream);
+
+
+	test *p = new test("ABC");
+	delete p;
 
 	return 0;
 }

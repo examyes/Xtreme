@@ -4,6 +4,7 @@
 #include <functional>
 using std::map;
 using std::function;
+using namespace std::placeholders;
 
 #include "../utils/ErrorReporter.h"
 #include "../data/SymbolTable.h"
@@ -30,20 +31,33 @@ namespace XASM
 			return;
 		}
 
+		m_instr_stream_size = 0;
+		m_is_stacksize_found = false;
+		m_is_func_active = false;
+		m_curr_func_local_data_size = 0;
+		m_curr_func_index = 0;
+		m_curr_func_name.clear();
+		m_curr_func_param_count = 0;
 
+		token_stream.reset();
+		CInstrStream instr_stream;
+		if (!parse_phase_2(token_stream, instr_stream))
+		{
+			return;
+		}
 	}
 
 	bool CSyntaxParser::parse_phase_1(CTokenStream& token_stream)
 	{
 		/// 第一次遍历，主要收集数据
 		static map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&)>> token_func_map = {
-			{ TOKEN_TYPE_IDENTIFY, std::bind(&CSyntaxParser::phase_1_identify, this, std::placeholders::_1, std::placeholders::_2) },
-			{ TOKEN_TYPE_CLOSE_BRACE, std::bind(&CSyntaxParser::phase_1_close_brace, this, std::placeholders::_1, std::placeholders::_2) },
-			{ TOKEN_TYPE_INSTRUCTION, std::bind(&CSyntaxParser::phase_1_instruction, this, std::placeholders::_1, std::placeholders::_2) },
-			{ TOKEN_TYPE_SET_STACKSIZE, std::bind(&CSyntaxParser::phase_1_stacksize, this, std::placeholders::_1, std::placeholders::_2) },
-			{ TOKEN_TYPE_VAR, std::bind(&CSyntaxParser::phase_1_var, this, std::placeholders::_1, std::placeholders::_2) },
-			{ TOKEN_TYPE_FUNC, std::bind(&CSyntaxParser::phase_1_func, this, std::placeholders::_1, std::placeholders::_2) },
-			{ TOKEN_TYPE_PARAM, std::bind(&CSyntaxParser::phase_1_param, this, std::placeholders::_1, std::placeholders::_2) }
+			{ TOKEN_TYPE_IDENTIFY, std::bind(&CSyntaxParser::phase_1_identify, this, _1, _2) },
+			{ TOKEN_TYPE_CLOSE_BRACE, std::bind(&CSyntaxParser::phase_1_close_brace, this, _1, _2) },
+			{ TOKEN_TYPE_INSTRUCTION, std::bind(&CSyntaxParser::phase_1_instruction, this, _1, _2) },
+			{ TOKEN_TYPE_SET_STACKSIZE, std::bind(&CSyntaxParser::phase_1_stacksize, this, _1, _2) },
+			{ TOKEN_TYPE_VAR, std::bind(&CSyntaxParser::phase_1_var, this, _1, _2) },
+			{ TOKEN_TYPE_FUNC, std::bind(&CSyntaxParser::phase_1_func, this, _1, _2) },
+			{ TOKEN_TYPE_PARAM, std::bind(&CSyntaxParser::phase_1_param, this, _1, _2) }
 		};
 
 		auto token_ptr = token_stream.next_token();
@@ -84,6 +98,7 @@ namespace XASM
 		return true;
 	}
 
+	/// 只解析LABEL
 	bool CSyntaxParser::phase_1_identify(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr)
 	{
 		auto next_token = token_stream.next_token();
@@ -135,7 +150,6 @@ namespace XASM
 		}
 
 		++m_instr_stream_size;
-			
 		return true;
 	}
 
@@ -202,15 +216,8 @@ namespace XASM
 			}
 		}
 
-		int stack_index = 0;
-		if (m_is_func_active)
-		{
-			stack_index = -(m_curr_func_local_data_size + 2);
-		}
-		else
-		{
-			stack_index = m_header.global_data_size;
-		}
+		int stack_index = m_is_func_active ? -(m_curr_func_local_data_size + 2) 
+			: m_header.global_data_size;
 
 		if (-1 == CSymbolTable::Instance()->add(token_ptr->lexeme,
 			size,
@@ -280,6 +287,7 @@ namespace XASM
 			return false;
 		}
 
+		// 在FUNC的结果会自动添加RET指令，所以此处需要++
 		++m_instr_stream_size;
 		return true;
 	}
@@ -317,4 +325,65 @@ namespace XASM
 
 		return true;
 	}
+
+
+	bool CSyntaxParser::parse_phase_2(CTokenStream& token_stream, CInstrStream& instr_stream)
+	{
+		static map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&, CInstrStream&)>> token_func_map = {
+			{ TOKEN_TYPE_CLOSE_BRACE, std::bind(&CSyntaxParser::phase_2_close_brace, this, _1, _2, _3) },
+			{ TOKEN_TYPE_INSTRUCTION, std::bind(&CSyntaxParser::phase_2_instruction, this, _1, _2, _3) },
+			{ TOKEN_TYPE_FUNC, std::bind(&CSyntaxParser::phase_2_func, this, _1, _2, _3) },
+			{ TOKEN_TYPE_PARAM, std::bind(&CSyntaxParser::phase_2_param, this, _1, _2, _3) }
+		};
+
+		auto token_ptr = token_stream.next_token();
+		while (token_ptr)
+		{
+			if (TOKEN_TYPE_END_OF_STREAM == token_ptr->type)
+			{
+				return true;
+			}
+
+			auto map_itor = token_func_map.find(token_ptr->type);
+			if (token_func_map.end() != map_itor)
+			{
+				auto functor = map_itor->second;
+				if (!functor(token_stream, token_ptr, instr_stream))
+				{
+					return false;
+				}
+			}
+
+			/// 此处需要的是跳转到下一行....但是不合理啊~~~
+			/// 暂时按照跳转到下一行进行操作，在每行结尾都有一个TOKEN_TYPE_NEWLINE
+			while (TOKEN_TYPE_NEWLINE != token_ptr->type)
+			{
+				token_ptr = token_stream.next_token();
+			}
+
+			token_ptr = token_stream.next_token();
+		}
+
+		return true;
+	}
+
+	bool CSyntaxParser::phase_2_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream)
+	{
+		return true;
+	};
+
+	bool CSyntaxParser::phase_2_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream)
+	{
+		return true;
+	};
+
+	bool CSyntaxParser::phase_2_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream)
+	{
+		return true;
+	};
+
+	bool CSyntaxParser::phase_2_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream)
+	{
+		return true;
+	};
 }
