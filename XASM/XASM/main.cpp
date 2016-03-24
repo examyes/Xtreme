@@ -21,21 +21,6 @@ using namespace XASM;
 #include <iomanip>
 
 
-class MyStr
-{
-public:
-	MyStr(string s) :str(s){ }
-private:
-	string str;
-};
-
-class test{
-public:
-	test(string s = " ") :mstr(new MyStr(s)) { }
-	~test(){ delete mstr; }
-private:
-	MyStr *mstr;
-};
 
 int main(int argc, char* argv[])
 {
@@ -78,10 +63,6 @@ int main(int argc, char* argv[])
 	}
 
 	//CSyntaxParser::Instance()->parse(token_stream);
-
-
-	test *p = new test("ABC");
-	delete p;
 
 	return 0;
 }
