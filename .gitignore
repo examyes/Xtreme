@@ -29,3 +29,7 @@
 /XVM/Debug
 /XVM/XVM/Debug
 /XASM/ipch
+build
+/XASM/src/GRTAGS
+/XASM/src/GTAGS
+/XASM/src/GPATH
