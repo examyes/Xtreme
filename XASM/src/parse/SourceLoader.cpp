@@ -4,7 +4,7 @@
 
 namespace XASM
 {
-	CSourceCodeHolder CSourceLoader::load_file(std::string& file_path)
+	CSourceCodeHolder CSourceLoader::load_file(const std::string& file_path)
 	{
 		CSourceCodeHolder holder(file_path);
 

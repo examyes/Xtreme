@@ -27,8 +27,8 @@ namespace XASM
 		string text() { return m_text; };
 		size_t row() { return m_row; };
 	};
-	
-	namespace detail
+
+namespace detail
 	{
 		class HolderImp
 		{
@@ -42,7 +42,7 @@ namespace XASM
 		public:
 
 			void append(shared_ptr<CSourceCodeLine>& line_ptr);
-			void append(string& line, size_t row);
+			void append(const string& line, size_t row);
 
 			iterator begin();
 			iterator end();
@@ -71,7 +71,7 @@ namespace XASM
 	public:
 
 		void append(shared_ptr<CSourceCodeLine>& line_ptr);
-		void append(string& line, size_t row);
+		void append(const string& line, size_t row);
 
 		iterator begin();
 		iterator end();

@@ -4,9 +4,9 @@ namespace XASM
 {
 	namespace detail
 	{
-		void HolderImp::append(string& line, size_t row)
+		void HolderImp::append(const string& line, size_t row)
 		{
-			auto line_ptr = std::make_shared<CSourceCodeLine>(line, row);
+        auto line_ptr = std::make_shared<CSourceCodeLine>(const_cast<string&>(line), row);
 			append(line_ptr);
 		}
 
@@ -51,7 +51,7 @@ namespace XASM
 		}
 	}
 
-	void CSourceCodeHolder::append(string& line, size_t row)
+	void CSourceCodeHolder::append(const string& line, size_t row)
 	{
 		m_holder->append(line, row);
 	}
