@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 
@@ -21,13 +20,11 @@ using namespace XASM;
 #include <stack>
 
 
-
 int main(int argc, char* argv[])
 {
 
 	CSourceCodeHolder srcHolder = CSourceLoader::load_file(std::string("test.xasm"));
 	srcHolder = CPreProcessor::pre_process(srcHolder);
-
 
 	string s[20] = {
 		"int",
@@ -55,8 +52,9 @@ int main(int argc, char* argv[])
 
 	for (auto&& i : token_stream)
 	{
-		cout << setw(10) << i->lexeme << setw(20) << s[i->type - 1]<< endl;
-	}
+		// cout << setw(10) << i->lexeme << setw(20) << s[i->type - 1]<< endl;
+      cout << setw(10) << i->lexeme << setw(20) << s[i->type -1] << endl;
+  }
 
 	CSyntaxParser::Instance()->parse(token_stream);
 
