@@ -8,19 +8,21 @@ using std::string;
 
 namespace XASM
 {
-	class CPreProcessor
-	{
-	private:
+
+class CPreProcessor
+{
+private:
 		CPreProcessor(void) {};
 		~CPreProcessor(void){};
 
-	public:
+public:
 		static CSourceCodeHolder pre_process(CSourceCodeHolder& pre_holder);
 
-	private:
+private:
 		static string strip_comments(const string& val_str);
 		static string pre_line(const string& val_str);
-	};
+};
+
 }
 
 

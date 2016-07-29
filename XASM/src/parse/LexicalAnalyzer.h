@@ -6,7 +6,7 @@
 #include <memory>
 using std::string;
 
-#include "../utils/utils.h"
+#include <liter/utils/Singleton.h>
 #include "../data/PublicDefine.h"
 
 #include "../data/SourceCodeHolder.h"
@@ -14,10 +14,11 @@ using std::string;
 
 namespace XASM
 {
-	class CLexicalAnalyzer : public Singleton<CLexicalAnalyzer>
-	{
+
+class CLexicalAnalyzer : public liter::Singleton<CLexicalAnalyzer>
+{
 		friend class Singleton<CLexicalAnalyzer>;
-	private:
+private:
 		enum ELexStatus
 		{
 			EN_LEX_NO_STRING = 0,		// ²»ÔÚ×Ö·û´®ÖÐ
@@ -25,38 +26,39 @@ namespace XASM
 			EN_LEX_END_STRING = 2		// ×Ö·û´®½áÊø
 		};
 
-	private:
+private:
 		ELexStatus m_lex_status;
 		string m_file_name;
 		string m_lexeme;
 		bool m_escape_find;
 
-	private:
-		class WalkHelper
+private:
+
+    class WalkHelper
 		{
 		private:
-			CSourceCodeHolder m_src;
-			CSourceCodeHolder::iterator m_curr;
-			size_t m_curr_index;
+        CSourceCodeHolder m_src;
+        CSourceCodeHolder::iterator m_curr;
+        size_t m_curr_index;
 
-		public:
-			static const char END_CHAR = -1;
+    public:
+        static const char END_CHAR = -1;
 
-		public:
-			WalkHelper(CSourceCodeHolder& holder);
+    public:
+        WalkHelper(CSourceCodeHolder& holder);
 
-		public:
-			char next();
-			size_t row();
+    public:
+        char next();
+        size_t row();
 
-		private:
-			bool skip_to_next_line();
+    private:
+        bool skip_to_next_line();
 		};
 
-	public:
+public:
 		CTokenStream analyze(CSourceCodeHolder& src);
 
-	private:
+private:
 		CLexicalAnalyzer(void){};
 		~CLexicalAnalyzer(void){};
 
@@ -67,7 +69,8 @@ namespace XASM
 		void add_token(size_t row, ETokenType type, CTokenStream& token_stream);
 		void parse_lexeme_to_token(size_t row, CTokenStream& token_stream);
 		ETokenType parse_token_type_from_lexeme();
-	};
+};
+
 }
 
 

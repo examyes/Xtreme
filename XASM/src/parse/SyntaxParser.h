@@ -13,23 +13,26 @@ using std::string;
 
 namespace XASM
 {
-	namespace detail
-	{
-		class SyntaxPhase1
-		{
 
-		};
+namespace detail
+{
 
-		class SyntaxPhase2
-		{
+class SyntaxPhase1
+{
 
-		};
-	}
+};
 
-	class CSyntaxParser : public Singleton<CSyntaxParser>
-	{
+class SyntaxPhase2
+{
+
+};
+
+}
+
+class CSyntaxParser : public Singleton<CSyntaxParser>
+{
 		friend class Singleton<CSyntaxParser>;
-	private:
+private:
 		SScriptHeader m_header;
 
 		int m_instr_stream_size;
@@ -41,10 +44,10 @@ namespace XASM
 		string m_curr_func_name;
 		int m_curr_func_param_count;
 
-	public:
+public:
 		void parse(CTokenStream& token_stream);
-		
-	private:
+
+ private:
 		CSyntaxParser(void){};
 		~CSyntaxParser(void){};
 
@@ -63,7 +66,8 @@ namespace XASM
 		bool phase_2_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 		bool phase_2_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 		bool phase_2_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
-	};
+};
+
 }
 
 

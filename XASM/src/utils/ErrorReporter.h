@@ -1,6 +1,7 @@
 #pragma once
 
-#include "utils.h"
+#include <liter/utils/Singleton.h>
+
 
 #define ERROR_MSSG_INVALID_INPUT	\
 	"Invalid input"
@@ -73,18 +74,19 @@
 
 namespace XASM
 {
-	class CErrorReporter : public Singleton<CErrorReporter>
-	{
+
+class CErrorReporter : public liter::Singleton<CErrorReporter>
+{
 		friend class Singleton<CErrorReporter>;
-	public:
+public:
 		void exit_on_error(const char* msg);
 		void exit_on_code_error(const char* msg, int row, const char* src);
 		void exit_on_char_expected_error(char ch);
 
-	private:
+private:
 		CErrorReporter() {};
 		~CErrorReporter() {};
-	};
+};
 
 }
 
