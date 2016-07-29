@@ -1,0 +1,3 @@
+[submodule "3rd/liter"]
+	path = 3rd/liter
+	url = https://github.com/lsytj0413/liter.git
