@@ -5,25 +5,28 @@
 using std::list;
 using std::string;
 
-#include "../utils/utils.h"
+#include <liter/utils/Singleton.h>
+
 
 namespace XASM
 {
-	class CStringTable : Singleton<CStringTable>
-	{
+
+class CStringTable : liter::Singleton<CStringTable>
+{
 		friend class Singleton<CStringTable>;
 
-	private:
+private:
 		list<string> m_table;
 
-	public:
+public:
 
 		int add(std::string& val_str);
 
-	private:
+private:
 		CStringTable(){};
 		~CStringTable(){};
-	};
+};
+
 }
 
 

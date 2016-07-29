@@ -4,8 +4,9 @@
 
 namespace XASM
 {
-	shared_ptr<SInstrLookup> CInstrLookupTable::get_instr_by_mnemonic(string& val_mnemonic)
-	{
+
+shared_ptr<SInstrLookup> CInstrLookupTable::get_instr_by_mnemonic(string& val_mnemonic)
+{
 		auto find_functor = [&val_mnemonic](shared_ptr<SInstrLookup>& node_ptr){
 			return node_ptr->mnemonic == val_mnemonic;
 		};
@@ -17,10 +18,10 @@ namespace XASM
 		}
 
 		return shared_ptr<SInstrLookup>(NULL);
-	}
+}
 
-	int CInstrLookupTable::add(string& val_mnemonic, int op_code, int op_count)
-	{
+int CInstrLookupTable::add(string& val_mnemonic, int op_code, int op_count)
+{
 		static int instr_index = 0;
 
 		auto node_ptr = std::make_shared<SInstrLookup>();
@@ -32,16 +33,16 @@ namespace XASM
 		m_table.push_back(node_ptr);
 
 		return instr_index++;
-	}
+}
 
-	void CInstrLookupTable::set_op_types(int instr_index, int op_index, OpTypes op_type)
-	{
+void CInstrLookupTable::set_op_types(int instr_index, int op_index, OpTypes op_type)
+{
 		shared_ptr<SInstrLookup> inst_ptr = m_table.at(instr_index);
 		inst_ptr->ops[op_index] = op_type;
-	}
+}
 
-	void CInstrLookupTable::init_table()
-	{
+void CInstrLookupTable::init_table()
+{
 		/// 初始化指令查找表，定义XASM指令集
 		int instr_index = 0;
 		string mnemonic;
@@ -117,8 +118,8 @@ namespace XASM
 		instr_index = add(mnemonic, INSTR_NEG, 1);
 		set_op_types(instr_index, 0, OP_FLAG_TYPE_MEM_REF |
 			OP_FLAG_TYPE_REG);
-		
-		// Inc Dest
+
+    // Inc Dest
 		mnemonic = "Inc";
 		instr_index = add(mnemonic, INSTR_INC, 1);
 		set_op_types(instr_index, 0, OP_FLAG_TYPE_MEM_REF |
@@ -223,8 +224,8 @@ namespace XASM
 		set_op_types(instr_index, 2, OP_FLAG_TYPE_STRING |
 			OP_FLAG_TYPE_MEM_REF |
 			OP_FLAG_TYPE_REG);
-		
-		// Jmp Label
+
+    // Jmp Label
 		mnemonic = "Jmp";
 		instr_index = add(mnemonic, INSTR_JMP, 1);
 		set_op_types(instr_index, 0, OP_FLAG_TYPE_LINE_LABEL);
@@ -353,5 +354,6 @@ namespace XASM
 			OP_FLAG_TYPE_STRING |
 			OP_FLAG_TYPE_MEM_REF |
 			OP_FLAG_TYPE_REG);
-	}
+}
+
 }

@@ -2,93 +2,96 @@
 
 namespace XASM
 {
-	namespace detail
-	{
-		void HolderImp::append(const string& line, size_t row)
-		{
-        auto line_ptr = std::make_shared<CSourceCodeLine>(const_cast<string&>(line), row);
-			append(line_ptr);
-		}
 
-		void HolderImp::append(shared_ptr<CSourceCodeLine>& line_ptr)
-		{
-			m_code.push_back(line_ptr);
-		}
+namespace detail
+{
 
-		HolderImp::iterator HolderImp::begin()
-		{
-			return m_code.begin();
-		}
+void HolderImp::append(const string& line, size_t row)
+{
+    auto line_ptr = std::make_shared<CSourceCodeLine>(const_cast<string&>(line), row);
+		append(line_ptr);
+}
 
-		HolderImp::iterator HolderImp::end()
-		{
-			return m_code.end();
-		}
+void HolderImp::append(shared_ptr<CSourceCodeLine>& line_ptr)
+{
+    m_code.push_back(line_ptr);
+}
 
-		size_t HolderImp::row_count()
-		{
-			return m_code.size();
-		}
+HolderImp::iterator HolderImp::begin()
+{
+    return m_code.begin();
+}
 
-		shared_ptr<CSourceCodeLine> HolderImp::at(size_t row)
-		{
-			if (row < m_code.size())
-			{
-				return m_code.at(row);
-			}
+HolderImp::iterator HolderImp::end()
+{
+    return m_code.end();
+}
 
-			return shared_ptr<CSourceCodeLine>(NULL);
-		}
+size_t HolderImp::row_count()
+{
+    return m_code.size();
+}
 
-		shared_ptr<CSourceCodeLine> HolderImp::operator[](size_t row)
-		{
-			return m_code[row];
-		}
+shared_ptr<CSourceCodeLine> HolderImp::at(size_t row)
+{
+    if (row < m_code.size())
+    {
+        return m_code.at(row);
+    }
 
-		string HolderImp::file_name() const
-		{
-			return m_file_name;
-		}
-	}
+    return shared_ptr<CSourceCodeLine>(NULL);
+}
 
-	void CSourceCodeHolder::append(const string& line, size_t row)
-	{
-		m_holder->append(line, row);
-	}
+shared_ptr<CSourceCodeLine> HolderImp::operator[](size_t row)
+{
+    return m_code[row];
+}
 
-	void CSourceCodeHolder::append(shared_ptr<CSourceCodeLine>& line_ptr)
-	{
-		m_holder->append(line_ptr);
-	}
+string HolderImp::file_name() const
+{
+    return m_file_name;
+}
 
+}
 
-	CSourceCodeHolder::iterator CSourceCodeHolder::begin()
-	{
-		return m_holder->begin();
-	}
+void CSourceCodeHolder::append(const string& line, size_t row)
+{
+    m_holder->append(line, row);
+}
 
-	CSourceCodeHolder::iterator CSourceCodeHolder::end()
-	{
-		return m_holder->end();
-	}
+void CSourceCodeHolder::append(shared_ptr<CSourceCodeLine>& line_ptr)
+{
+    m_holder->append(line_ptr);
+}
 
-	size_t CSourceCodeHolder::row_count()
-	{
-		return m_holder->row_count();
-	}
+CSourceCodeHolder::iterator CSourceCodeHolder::begin()
+{
+    return m_holder->begin();
+}
 
-	shared_ptr<CSourceCodeLine> CSourceCodeHolder::at(size_t row)
-	{
-		return m_holder->at(row);
-	}
+CSourceCodeHolder::iterator CSourceCodeHolder::end()
+{
+    return m_holder->end();
+}
 
-	shared_ptr<CSourceCodeLine> CSourceCodeHolder::operator[](size_t row)
-	{
-		return (*m_holder)[row];
-	}
+size_t CSourceCodeHolder::row_count()
+{
+    return m_holder->row_count();
+}
 
-	string CSourceCodeHolder::file_name() const
-	{
-		return m_holder->file_name();
-	}
+shared_ptr<CSourceCodeLine> CSourceCodeHolder::at(size_t row)
+{
+    return m_holder->at(row);
+}
+
+shared_ptr<CSourceCodeLine> CSourceCodeHolder::operator[](size_t row)
+{
+    return (*m_holder)[row];
+}
+
+string CSourceCodeHolder::file_name() const
+{
+    return m_holder->file_name();
+}
+
 }

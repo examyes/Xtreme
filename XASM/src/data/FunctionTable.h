@@ -7,28 +7,29 @@ using std::list;
 using std::string;
 using std::shared_ptr;
 
-#include "../utils/utils.h"
+#include <liter/utils/Singleton.h>
 #include "PublicDefine.h"
 
 namespace XASM
 {
-	class CFunctionTable : public Singleton<CFunctionTable>
-	{
+
+class CFunctionTable : public liter::Singleton<CFunctionTable>
+{
 		friend class Singleton<CFunctionTable>;
-	private:
+private:
 		list<shared_ptr<SFuncNode>> m_table;
 
-	public:
+public:
 		shared_ptr<SFuncNode> get_func_by_name(string& val_name);
 		void set_func_info(string& val_name, int param_count, int localdata_size);
 		int add(string& val_name, int entry_point);
 
-	private:
+private:
 		CFunctionTable(){};
 		~CFunctionTable(){};
-	};
+};
 
-	using CHostApiCallTable = CFunctionTable;
+using CHostApiCallTable = CFunctionTable;
+
 }
-
 

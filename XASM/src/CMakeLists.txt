@@ -1,4 +1,6 @@
 
+SET (CMAKE_CXX_FLAGS "-std=c++11")
+
 SET (XASM_SRC
   main.cpp
   data/FunctionTable.cpp
@@ -18,7 +20,6 @@ SET (XASM_SRC
   utils/StringUtils.cpp
   )
 
-
+include_directories(../../3rd/liter)
 
 ADD_EXECUTABLE(xasm ${XASM_SRC})
-

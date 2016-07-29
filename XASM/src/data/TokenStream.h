@@ -11,45 +11,49 @@ using std::string;
 
 namespace XASM
 {
-	namespace detail
-	{
-		class TokenStreamImp
-		{
-		public:
-			using iterator = vector<shared_ptr<SToken>>::const_iterator;
 
-		private:
-			vector<shared_ptr<SToken>> m_tokens;
+namespace detail
+{
 
-		public:
-			void push_back(shared_ptr<SToken>& token_ptr);
-			iterator begin() const;
-			iterator end() const;
-		};
-	}
+class TokenStreamImp
+{
+public:
+    using iterator = vector<shared_ptr<SToken>>::const_iterator;
 
-	class CTokenStream
-	{
-	public:
-		using iterator = detail::TokenStreamImp::iterator;
+private:
+    vector<shared_ptr<SToken>> m_tokens;
 
-	private:
-		shared_ptr<detail::TokenStreamImp> m_imp;
-		iterator m_curr;
+public:
+    void push_back(shared_ptr<SToken>& token_ptr);
+    iterator begin() const;
+    iterator end() const;
+};
 
-	public:
-		CTokenStream(){
-			m_imp = std::make_shared<detail::TokenStreamImp>();
-			m_curr = m_imp->begin();
-		};
+}
 
-		void push_back(SToken& token);
+class CTokenStream
+{
+public:
+    using iterator = detail::TokenStreamImp::iterator;
 
-		iterator begin() const;
-		iterator end() const;
+private:
+    shared_ptr<detail::TokenStreamImp> m_imp;
+    iterator m_curr;
 
-		void reset();
-		shared_ptr<SToken> next_token();
-		shared_ptr<SToken> peek_next_token();
-	};
+public:
+    CTokenStream(){
+        m_imp = std::make_shared<detail::TokenStreamImp>();
+        m_curr = m_imp->begin();
+    };
+
+    void push_back(SToken& token);
+
+    iterator begin() const;
+    iterator end() const;
+
+    void reset();
+    shared_ptr<SToken> next_token();
+    shared_ptr<SToken> peek_next_token();
+};
+
 }

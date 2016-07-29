@@ -1,50 +1,55 @@
 #include "InstrStream.h"
 
+
 namespace XASM
 {
-	namespace detail
-	{
-		void InstrStreamImp::push_back(shared_ptr<SInstr>& instr_ptr)
-		{
-			m_instrs.push_back(instr_ptr);
-		}
 
-		InstrStreamImp::iterator InstrStreamImp::begin()
-		{
-			return m_instrs.begin();
-		}
+namespace detail
+{
 
-		InstrStreamImp::iterator InstrStreamImp::end()
-		{
-			return m_instrs.end();
-		}
+void InstrStreamImp::push_back(shared_ptr<SInstr>& instr_ptr)
+{
+		m_instrs.push_back(instr_ptr);
+}
 
-		size_t InstrStreamImp::size()
-		{
-			return m_instrs.size();
-		}
-	}
+InstrStreamImp::iterator InstrStreamImp::begin()
+{
+		return m_instrs.begin();
+}
 
-	void CInstrStream::push_back(SInstr& instr)
-	{
-		auto instr_ptr = std::make_shared<SInstr>();
-		*instr_ptr = instr;
+InstrStreamImp::iterator InstrStreamImp::end()
+{
+		return m_instrs.end();
+}
 
-		m_imp->push_back(instr_ptr);
-	}
+size_t InstrStreamImp::size()
+{
+		return m_instrs.size();
+}
 
-	CInstrStream::iterator CInstrStream::begin()
-	{
-		return m_imp->begin(); 
-	}
+}
 
-	CInstrStream::iterator CInstrStream::end()
-	{
-		return m_imp->end();
-	}
+void CInstrStream::push_back(SInstr& instr)
+{
+    auto instr_ptr = std::make_shared<SInstr>();
+    *instr_ptr = instr;
 
-	size_t CInstrStream::size()
-	{
-		return m_imp->size();
-	}
+    m_imp->push_back(instr_ptr);
+}
+
+CInstrStream::iterator CInstrStream::begin()
+{
+    return m_imp->begin(); 
+}
+
+CInstrStream::iterator CInstrStream::end()
+{
+    return m_imp->end();
+}
+
+size_t CInstrStream::size()
+{
+    return m_imp->size();
+}
+
 }

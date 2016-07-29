@@ -4,8 +4,9 @@
 
 namespace XASM
 {
-	int CStringTable::add(std::string& val_str)
-	{
+
+int CStringTable::add(std::string& val_str)
+{
 		list<string>::iterator itor = m_table.begin();
 		int curr_index = 0;
 		while (m_table.end() != itor)
@@ -21,6 +22,7 @@ namespace XASM
 
 		m_table.push_back(val_str);
 		return curr_index;
-	}
+}
+
 }
 

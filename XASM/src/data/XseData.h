@@ -5,12 +5,14 @@
 
 namespace XASM
 {
-	class CXseData
-	{
-	private:
+
+class CXseData
+{
+private:
 		SScriptHeader m_header;
 		CInstrStream m_instr_stream;
 
 
-	};
+};
+
 }

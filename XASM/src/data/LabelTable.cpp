@@ -2,10 +2,12 @@
 
 #include <algorithm>
 
+
 namespace XASM
 {
-	shared_ptr<SLabelNode> CLabelTable::get_label_by_ident(string& val_ident, int func_index)
-	{
+
+shared_ptr<SLabelNode> CLabelTable::get_label_by_ident(string& val_ident, int func_index)
+{
 		auto find_functor = [&](shared_ptr<SLabelNode>& node_ptr){
 			return node_ptr->ident == val_ident &&
 				node_ptr->func_index == func_index;
@@ -18,10 +20,10 @@ namespace XASM
 		}
 
 		return shared_ptr<SLabelNode>(NULL);
-	}
+}
 
-	int CLabelTable::add(string& val_ident, int target_index, int func_index)
-	{
+int CLabelTable::add(string& val_ident, int target_index, int func_index)
+{
 		if (get_label_by_ident(val_ident, func_index))
 		{
 			return -1;
@@ -36,5 +38,6 @@ namespace XASM
 		node_ptr->index = m_table.size() - 1;
 
 		return node_ptr->index;
-	}
+}
+
 }
