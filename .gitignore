@@ -35,3 +35,8 @@ build
 /XASM/src/GPATH
 /XASM/src/.ycm_extra_conf.py
 /XASM/src/.ycm_extra_conf.pyc
+/XASM/test/GRTAGS
+/XASM/test/GTAGS
+/XASM/test/GPATH
+/XASM/test/.ycm_extra_conf.py
+/XASM/test/.ycm_extra_conf.pyc
