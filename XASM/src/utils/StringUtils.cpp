@@ -19,7 +19,7 @@ bool ident_p(char val_ch)
 
 bool delimiter_p(char val_ch)
 {
-		return whitespace_p(val_ch) ||
+		return StringUtils::whitespace_p(val_ch) ||
             ':' == val_ch ||
             ',' == val_ch ||
             '"' == val_ch ||
@@ -38,7 +38,7 @@ bool ident_p(const string& val_str)
 
 		std::array<SStatFunc, 2> stat_funcs;
 		stat_funcs[0] = { [](char val_ch, int& status) -> bool {
-            if (ident_p(val_ch) && (!numeric_p(val_ch)))
+            if (ident_p(val_ch) && (!StringUtils::numeric_p(val_ch)))
             {
                 status = 1;
                 return true;

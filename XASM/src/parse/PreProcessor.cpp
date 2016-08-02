@@ -30,7 +30,7 @@ CSourceCodeHolder CPreProcessor::pre_process(CSourceCodeHolder& pre_holder)
 
 string CPreProcessor::pre_line(const string& val_str)
 {
-    return trim(strip_comments(val_str));
+    return StringUtils::trim(strip_comments(val_str));
 }
 
 string CPreProcessor::strip_comments(const string& val_str)

@@ -62,7 +62,7 @@ void CLexicalAnalyzer::analyze_char(char val_ch, size_t row, CTokenStream& token
         m_lex_status = EN_LEX_NO_STRING;
     }
 
-    if (EN_LEX_IN_STRING != m_lex_status && whitespace_p(val_ch))
+    if (EN_LEX_IN_STRING != m_lex_status && StringUtils::whitespace_p(val_ch))
     {
         // 空白符不在字符串中，尝试解析一次
         parse_lexeme_to_token(row, token_stream);
@@ -178,12 +178,12 @@ ETokenType CLexicalAnalyzer::parse_token_type_from_lexeme()
         return string_2_itor->second;
     }
 
-    if (float_p(m_lexeme))
+    if (StringUtils::float_p(m_lexeme))
     {
         return TOKEN_TYPE_FLOAT;
     }
 
-    if (int_p(m_lexeme))
+    if (StringUtils::int_p(m_lexeme))
     {
         return TOKEN_TYPE_INT;
     }
