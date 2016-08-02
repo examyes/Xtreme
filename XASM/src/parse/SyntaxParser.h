@@ -1,16 +1,16 @@
 #pragma once
 
 #include <string>
+#include <liter/utils/Singleton.h>
 using std::string;
+using liter::Singleton;
 
 
-#include "../utils/utils.h"
 #include "../data/PublicDefine.h"
 #include "../data/TokenStream.h"
 #include "../data/InstrStream.h"
 
 /// 继续拆分，将phase1和phase2拆分为两个类
-
 namespace XASM
 {
 

@@ -8,6 +8,8 @@ using std::string;
 using std::shared_ptr;
 
 #include <liter/utils/Singleton.h>
+using namespace liter;
+
 #include "PublicDefine.h"
 
 

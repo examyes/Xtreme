@@ -5,6 +5,9 @@
 using std::function;
 using std::map;
 
+#include <liter/utils/string_utils.h>
+using namespace liter;
+
 #include "../utils/StringUtils.h"
 #include "../data/InstrLookupTable.h"
 
@@ -59,7 +62,7 @@ void CLexicalAnalyzer::analyze_char(char val_ch, size_t row, CTokenStream& token
         m_lex_status = EN_LEX_NO_STRING;
     }
 
-    if (EN_LEX_IN_STRING != m_lex_status && is_char_whitespace(val_ch))
+    if (EN_LEX_IN_STRING != m_lex_status && whitespace_p(val_ch))
     {
         // 空白符不在字符串中，尝试解析一次
         parse_lexeme_to_token(row, token_stream);
@@ -129,7 +132,7 @@ void CLexicalAnalyzer::analyze_char_out_string(char val_ch,
         return;
     }
 
-    if (is_char_delimiter(val_ch))
+    if (delimiter_p(val_ch))
     {
         parse_lexeme_to_token(row, token_stream);
         m_lexeme = val_ch;
@@ -175,12 +178,12 @@ ETokenType CLexicalAnalyzer::parse_token_type_from_lexeme()
         return string_2_itor->second;
     }
 
-    if (is_string_float(m_lexeme))
+    if (float_p(m_lexeme))
     {
         return TOKEN_TYPE_FLOAT;
     }
 
-    if (is_string_int(m_lexeme))
+    if (int_p(m_lexeme))
     {
         return TOKEN_TYPE_INT;
     }
@@ -191,7 +194,7 @@ ETokenType CLexicalAnalyzer::parse_token_type_from_lexeme()
         return TOKEN_TYPE_INSTRUCTION;
     }
 
-    if (is_string_ident(m_lexeme))
+    if (ident_p(m_lexeme))
     {
         return TOKEN_TYPE_IDENTIFY;
     }

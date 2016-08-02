@@ -2,6 +2,9 @@
 
 #include <algorithm>
 
+#include <liter/utils/string_utils.h>
+using namespace liter;
+
 #include "../utils/StringUtils.h"
 
 namespace XASM
