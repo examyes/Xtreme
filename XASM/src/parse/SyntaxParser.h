@@ -17,14 +17,26 @@ namespace XASM
 namespace detail
 {
 
-class SyntaxPhase1
+struct SyntaxPhase1
 {
-
+		bool parse_phase(CTokenStream& token_stream);
+		bool phase_identify(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool phase_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool phase_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool phase_stacksize(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool phase_var(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool phase_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool phase_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool phase_default(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 };
 
-class SyntaxPhase2
+struct SyntaxPhase2
 {
-
+		bool parse_phase(CTokenStream& token_stream, CInstrStream& instr_stream);
+		bool phase_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool phase_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool phase_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool phase_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 };
 
 }
