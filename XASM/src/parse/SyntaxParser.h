@@ -17,9 +17,18 @@ namespace XASM
 namespace detail
 {
 
-struct SyntaxPhase1
+struct SyntaxParserPhase1
 {
-		bool parse_phase(CTokenStream& token_stream);
+		int m_instr_stream_size;
+		bool m_is_stacksize_found;
+		bool m_is_func_active;
+
+		int m_curr_func_local_data_size;
+		int m_curr_func_index;
+		string m_curr_func_name;
+		int m_curr_func_param_count;
+
+    bool parse(CTokenStream& token_stream);
 		bool phase_identify(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 		bool phase_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 		bool phase_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
@@ -30,9 +39,18 @@ struct SyntaxPhase1
 		bool phase_default(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 };
 
-struct SyntaxPhase2
+struct SyntaxParserPhase2
 {
-		bool parse_phase(CTokenStream& token_stream, CInstrStream& instr_stream);
+		int m_instr_stream_size;
+		bool m_is_stacksize_found;
+		bool m_is_func_active;
+
+		int m_curr_func_local_data_size;
+		int m_curr_func_index;
+		string m_curr_func_name;
+		int m_curr_func_param_count;
+
+    bool parse(CTokenStream& token_stream, CInstrStream& instr_stream);
 		bool phase_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 		bool phase_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 		bool phase_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);

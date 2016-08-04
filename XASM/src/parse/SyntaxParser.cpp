@@ -15,6 +15,114 @@ using namespace std::placeholders;
 namespace XASM
 {
 
+namespace detail
+{
+
+bool SyntaxParserPhase1::parse( XASM::CTokenStream &token_stream )
+{
+		m_instr_stream_size = 0;
+		m_is_stacksize_found = false;
+		m_is_func_active = false;
+		m_curr_func_local_data_size = 0;
+		m_curr_func_index = 0;
+		m_curr_func_name.clear();
+		m_curr_func_param_count = 0;
+
+    token_stream.reset();
+
+		static map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&)>> token_func_map = {
+        { TOKEN_TYPE_IDENTIFY, std::bind(&SyntaxParserPhase1::phase_identify, this, _1, _2) },
+        { TOKEN_TYPE_CLOSE_BRACE, std::bind(&SyntaxParserPhase1::phase_close_brace, this, _1, _2) },
+        { TOKEN_TYPE_INSTRUCTION, std::bind(&SyntaxParserPhase1::phase_instruction, this, _1, _2) },
+        { TOKEN_TYPE_SET_STACKSIZE, std::bind(&SyntaxParserPhase1::phase_stacksize, this, _1, _2) },
+        { TOKEN_TYPE_VAR, std::bind(&SyntaxParserPhase1::phase_var, this, _1, _2) },
+        { TOKEN_TYPE_FUNC, std::bind(&SyntaxParserPhase1::phase_func, this, _1, _2) },
+        { TOKEN_TYPE_PARAM, std::bind(&SyntaxParserPhase1::phase_param, this, _1, _2) }
+		};
+
+    auto token_ptr = token_stream.next_token();
+		while (token_ptr)
+		{
+        if (TOKEN_TYPE_END_OF_STREAM == token_ptr->type)
+        {
+            return true;
+        }
+
+        auto map_itor = token_func_map.find(token_ptr->type);
+        if (token_func_map.end() != map_itor)
+        {
+            auto functor = map_itor->second;
+            if (!functor(token_stream, token_ptr))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!phase_default(token_stream, token_ptr))
+            {
+                return false;
+            }
+        }
+
+        /// 此处需要的是跳转到下一行....但是不合理啊~~~
+        /// 暂时按照跳转到下一行进行操作，在每行结尾都有一个TOKEN_TYPE_NEWLINE
+        while (TOKEN_TYPE_NEWLINE != token_ptr->type)
+        {
+            token_ptr = token_stream.next_token();
+        }
+
+        token_ptr = token_stream.next_token();
+		}
+
+		return true;
+}
+
+bool SyntaxParserPhase1::phase_identify( XASM::CTokenStream &token_stream,
+                                         shared_ptr<XASM::SToken> &token_ptr )
+{
+		auto next_token = token_stream.next_token();
+		if (TOKEN_TYPE_COLON != next_token->type)
+		{
+        CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_INVALID_INSTR);
+        return false;
+		}
+
+		if (!m_is_func_active)
+		{
+        CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_GLOBAL_LINE_LABEL);
+        return false;
+		}
+
+		if (-1 == CLabelTable::Instance()->add(token_ptr->lexeme,
+                                           m_instr_stream_size - 1,
+                                           m_curr_func_index))
+		{
+        CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_LINE_LABEL_REDEFINITION);
+        return false;
+		}
+
+		return true;
+}
+
+bool SyntaxParserPhase1::phase_close_brace( XASM::CTokenStream &token_stream,
+                                            shared_ptr<XASM::SToken> &token_ptr )
+{
+		if (!m_is_func_active)
+		{
+        CErrorReporter::Instance()->exit_on_char_expected_error('}');
+        return false;
+		}
+
+		CFunctionTable::Instance()->set_func_info(m_curr_func_name,
+                                              m_curr_func_param_count,
+                                              m_curr_func_local_data_size);
+
+		m_is_func_active = false;
+		return true;
+}
+
+}
 /// 这个语法分析很不健壮
 void CSyntaxParser::parse(CTokenStream& token_stream)
 {
@@ -41,7 +149,7 @@ void CSyntaxParser::parse(CTokenStream& token_stream)
 		m_curr_func_param_count = 0;
 
 		token_stream.reset();
-		CInstrStream instr_stream;
+    CInstrStream instr_stream;
 		if (!parse_phase_2(token_stream, instr_stream))
 		{
         return;
