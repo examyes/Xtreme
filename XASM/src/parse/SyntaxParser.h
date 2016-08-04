@@ -29,14 +29,14 @@ struct SyntaxParserPhase1
 		int m_curr_func_param_count;
 
     bool parse(CTokenStream& token_stream);
-		bool phase_identify(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_stacksize(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_var(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_default(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool parse_identify(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool parse_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool parse_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool parse_stacksize(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool parse_var(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool parse_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool parse_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+		bool parse_default(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 };
 
 struct SyntaxParserPhase2
