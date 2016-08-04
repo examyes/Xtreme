@@ -5,12 +5,11 @@
 using std::string;
 using liter::Singleton;
 
-
 #include "../data/PublicDefine.h"
 #include "../data/TokenStream.h"
 #include "../data/InstrStream.h"
 
-/// 继续拆分，将phase1和phase2拆分为两个类
+
 namespace XASM
 {
 
@@ -51,10 +50,10 @@ struct SyntaxParserPhase2
 		int m_curr_func_param_count;
 
     bool parse(CTokenStream& token_stream, CInstrStream& instr_stream);
-		bool phase_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
-		bool phase_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
-		bool phase_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
-		bool phase_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool parse_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool parse_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool parse_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+		bool parse_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 };
 
 }
