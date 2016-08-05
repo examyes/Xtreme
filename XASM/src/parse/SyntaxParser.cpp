@@ -4,6 +4,7 @@
 #include <functional>
 using std::map;
 using std::function;
+using std::bind;
 using namespace std::placeholders;
 
 #include "../utils/ErrorReporter.h"
@@ -30,14 +31,36 @@ bool SyntaxParserPhase1::parse( XASM::CTokenStream &token_stream )
 
     token_stream.reset();
 
-		static map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&)>> token_func_map = {
-        { TOKEN_TYPE_IDENTIFY, std::bind(&SyntaxParserPhase1::parse_identify, this, _1, _2) },
-        { TOKEN_TYPE_CLOSE_BRACE, std::bind(&SyntaxParserPhase1::parse_close_brace, this, _1, _2) },
-        { TOKEN_TYPE_INSTRUCTION, std::bind(&SyntaxParserPhase1::parse_instruction, this, _1, _2) },
-        { TOKEN_TYPE_SET_STACKSIZE, std::bind(&SyntaxParserPhase1::parse_stacksize, this, _1, _2) },
-        { TOKEN_TYPE_VAR, std::bind(&SyntaxParserPhase1::parse_var, this, _1, _2) },
-        { TOKEN_TYPE_FUNC, std::bind(&SyntaxParserPhase1::parse_func, this, _1, _2) },
-        { TOKEN_TYPE_PARAM, std::bind(&SyntaxParserPhase1::parse_param, this, _1, _2) }
+    using TokenFuncMap = map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&)>>;
+		static TokenFuncMap token_func_map = {
+        {
+            TOKEN_TYPE_IDENTIFY,
+            bind(&SyntaxParserPhase1::parse_identify, this, _1, _2)
+        },
+        {
+            TOKEN_TYPE_CLOSE_BRACE,
+            bind(&SyntaxParserPhase1::parse_close_brace, this, _1, _2)
+        },
+        {
+            TOKEN_TYPE_INSTRUCTION,
+            bind(&SyntaxParserPhase1::parse_instruction, this, _1, _2)
+        },
+        {
+            TOKEN_TYPE_SET_STACKSIZE,
+            bind(&SyntaxParserPhase1::parse_stacksize, this, _1, _2)
+        },
+        {
+            TOKEN_TYPE_VAR,
+            bind(&SyntaxParserPhase1::parse_var, this, _1, _2)
+        },
+        {
+            TOKEN_TYPE_FUNC,
+            bind(&SyntaxParserPhase1::parse_func, this, _1, _2)
+        },
+        {
+            TOKEN_TYPE_PARAM,
+            bind(&SyntaxParserPhase1::parse_param, this, _1, _2)
+        }
 		};
 
     auto token_ptr = token_stream.next_token();
@@ -59,7 +82,7 @@ bool SyntaxParserPhase1::parse( XASM::CTokenStream &token_stream )
         }
         else
         {
-            if (!phase_default(token_stream, token_ptr))
+            if (!parse_default(token_stream, token_ptr))
             {
                 return false;
             }
@@ -75,6 +98,7 @@ bool SyntaxParserPhase1::parse( XASM::CTokenStream &token_stream )
         token_ptr = token_stream.next_token();
 		}
 
+    return true;
 }
 
 bool SyntaxParserPhase1::parse_identify( XASM::CTokenStream &token_stream,
@@ -324,11 +348,24 @@ bool SyntaxParserPhase2::parse( XASM::CTokenStream &token_stream,
 		m_curr_func_param_count = 0;
 
 		token_stream.reset();
-		static map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&, CInstrStream&)>> token_func_map = {
-        { TOKEN_TYPE_CLOSE_BRACE, std::bind(&SyntaxParserPhase2::parse_close_brace, this, _1, _2, _3) },
-        { TOKEN_TYPE_INSTRUCTION, std::bind(&SyntaxParserPhase2::parse_instruction, this, _1, _2, _3) },
-        { TOKEN_TYPE_FUNC, std::bind(&SyntaxParserPhase2::parse_func, this, _1, _2, _3) },
-        { TOKEN_TYPE_PARAM, std::bind(&SyntaxParserPhase2::parse_param, this, _1, _2, _3) }
+    using TokenFuncMap = map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&, CInstrStream&)>>;
+		static TokenFuncMap token_func_map = {
+        {
+            TOKEN_TYPE_CLOSE_BRACE,
+            bind(&SyntaxParserPhase2::parse_close_brace, this, _1, _2, _3)
+        },
+        {
+            TOKEN_TYPE_INSTRUCTION,
+            bind(&SyntaxParserPhase2::parse_instruction, this, _1, _2, _3)
+        },
+        {
+            TOKEN_TYPE_FUNC,
+            bind(&SyntaxParserPhase2::parse_func, this, _1, _2, _3)
+        },
+        {
+            TOKEN_TYPE_PARAM,
+            bind(&SyntaxParserPhase2::parse_param, this, _1, _2, _3)
+        }
 		};
 
 		auto token_ptr = token_stream.next_token();
