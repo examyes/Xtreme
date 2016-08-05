@@ -312,6 +312,84 @@ bool SyntaxParserPhase1::parse_default( XASM::CTokenStream &token_stream,
 		return true;
 }
 
+bool SyntaxParserPhase2::parse( XASM::CTokenStream &token_stream,
+                                XASM::CInstrStream &instr_stream )
+{
+		m_instr_stream_size = 0;
+		m_is_stacksize_found = false;
+		m_is_func_active = false;
+		m_curr_func_local_data_size = 0;
+		m_curr_func_index = 0;
+		m_curr_func_name.clear();
+		m_curr_func_param_count = 0;
+
+		token_stream.reset();
+		static map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&, CInstrStream&)>> token_func_map = {
+        { TOKEN_TYPE_CLOSE_BRACE, std::bind(&SyntaxParserPhase2::parse_close_brace, this, _1, _2, _3) },
+        { TOKEN_TYPE_INSTRUCTION, std::bind(&SyntaxParserPhase2::parse_instruction, this, _1, _2, _3) },
+        { TOKEN_TYPE_FUNC, std::bind(&SyntaxParserPhase2::parse_func, this, _1, _2, _3) },
+        { TOKEN_TYPE_PARAM, std::bind(&SyntaxParserPhase2::parse_param, this, _1, _2, _3) }
+		};
+
+		auto token_ptr = token_stream.next_token();
+		while (token_ptr)
+		{
+        if (TOKEN_TYPE_END_OF_STREAM == token_ptr->type)
+        {
+            return true;
+        }
+
+        auto map_itor = token_func_map.find(token_ptr->type);
+        if (token_func_map.end() != map_itor)
+        {
+            auto functor = map_itor->second;
+            if (!functor(token_stream, token_ptr, instr_stream))
+            {
+                return false;
+            }
+        }
+
+        /// 此处需要的是跳转到下一行....但是不合理啊~~~
+        /// 暂时按照跳转到下一行进行操作，在每行结尾都有一个TOKEN_TYPE_NEWLINE
+        while (TOKEN_TYPE_NEWLINE != token_ptr->type)
+        {
+            token_ptr = token_stream.next_token();
+        }
+
+        token_ptr = token_stream.next_token();
+		}
+
+		return true;
+}
+
+bool SyntaxParserPhase2::parse_func( XASM::CTokenStream &token_stream,
+                                     shared_ptr<XASM::SToken> &token_ptr,
+                                     XASM::CInstrStream &instr_stream )
+{
+    return true;
+}
+
+bool SyntaxParserPhase2::parse_param( XASM::CTokenStream &token_stream,
+                                      shared_ptr<XASM::SToken> &token_ptr,
+                                      XASM::CInstrStream &instr_stream )
+{
+    return true;
+}
+
+bool SyntaxParserPhase2::parse_close_brace( XASM::CTokenStream &token_stream,
+                                            shared_ptr<XASM::SToken> &token_ptr,
+                                            XASM::CInstrStream &instr_stream )
+{
+    return true;
+}
+
+bool SyntaxParserPhase2::parse_instruction( XASM::CTokenStream &token_stream,
+                                            shared_ptr<XASM::SToken> &token_ptr,
+                                            XASM::CInstrStream &instr_stream )
+{
+    return true;
+}
+
 }
 /// 这个语法分析很不健壮
 void CSyntaxParser::parse(CTokenStream& token_stream)
