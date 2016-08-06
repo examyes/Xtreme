@@ -2,8 +2,13 @@
 
 #include <string>
 #include <liter/utils/Singleton.h>
+#include <map>
+#include <functional>
 using std::string;
 using liter::Singleton;
+using std::map;
+using std::function;
+using std::bind;
 
 #include "../data/PublicDefine.h"
 #include "../data/TokenStream.h"
@@ -36,6 +41,11 @@ struct SyntaxParserPhase1
 		bool parse_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 		bool parse_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
 		bool parse_default(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
+
+private:
+    using ParseFuncType = function<bool(CTokenStream&, shared_ptr<SToken>&)>;
+
+    ParseFuncType get_parse_func(ETokenType token_type) const;
 };
 
 struct SyntaxParserPhase2
