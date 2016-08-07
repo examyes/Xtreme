@@ -19,6 +19,7 @@ namespace XASM
 namespace detail
 {
 
+// 根据当前属性符返回相应的解析函数
 SyntaxParserPhase1::ParseFuncType SyntaxParserPhase1::get_parse_func(ETokenType token_type) const
 {
     using TokenFuncMap = map<ETokenType, ParseFuncType>;
@@ -65,6 +66,7 @@ SyntaxParserPhase1::ParseFuncType SyntaxParserPhase1::get_parse_func(ETokenType 
 
 }
 
+// 解析函数，解析整个属性符流
 bool SyntaxParserPhase1::parse( XASM::CTokenStream &token_stream )
 {
     SyntaxVarible::Instance()->reset();
@@ -113,7 +115,7 @@ bool SyntaxParserPhase1::parse_identify( XASM::CTokenStream &token_stream,
 		}
 
     // 标号必须在函数中
-		if (!m_is_func_active)
+		if (!SyntaxVarible::Instance()->m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_GLOBAL_LINE_LABEL);
         return false;
@@ -121,8 +123,8 @@ bool SyntaxParserPhase1::parse_identify( XASM::CTokenStream &token_stream,
 
     // 添加到标号表中
 		if (-1 == CLabelTable::Instance()->add(token_ptr->lexeme,
-                                           m_instr_stream_size - 1,
-                                           m_curr_func_index))
+                                           SyntaxVarible::Instance()->m_instr_stream_size - 1,
+                                           SyntaxVarible::Instance()->m_curr_func_index))
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_LINE_LABEL_REDEFINITION);
         return false;
@@ -136,18 +138,18 @@ bool SyntaxParserPhase1::parse_close_brace( XASM::CTokenStream &token_stream,
                                             shared_ptr<XASM::SToken> &token_ptr )
 {
     // 右大括号只用于函数体
-		if (!m_is_func_active)
+		if (!SyntaxVarible::Instance()->m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_char_expected_error('}');
         return false;
 		}
 
-		CFunctionTable::Instance()->set_func_info(m_curr_func_name,
-                                              m_curr_func_param_count,
-                                              m_curr_func_local_data_size);
+		CFunctionTable::Instance()->set_func_info(SyntaxVarible::Instance()->m_curr_func_name,
+                                              SyntaxVarible::Instance()->m_curr_func_param_count,
+                                              SyntaxVarible::Instance()->m_curr_func_local_data_size);
 
     // 函数体结束
-		m_is_func_active = false;
+		SyntaxVarible::Instance()->m_is_func_active = false;
 		return true;
 }
 
@@ -156,13 +158,13 @@ bool SyntaxParserPhase1::parse_instruction( XASM::CTokenStream &token_stream,
                                             shared_ptr<XASM::SToken> &token_ptr )
 {
     // 指令必须在函数中
-		if (!m_is_func_active)
+		if (!SyntaxVarible::Instance()->m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_GLOBAL_INSTR);
         return false;
 		}
 
-		++m_instr_stream_size;
+		++SyntaxVarible::Instance()->m_instr_stream_size;
 		return true;
 }
 
@@ -171,14 +173,14 @@ bool SyntaxParserPhase1::parse_stacksize( XASM::CTokenStream &token_stream,
                                           shared_ptr<XASM::SToken> &token_ptr )
 {
     // 不能在函数中
-		if (m_is_func_active)
+		if (SyntaxVarible::Instance()->m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_LOCAL_SETSTACKSIZE);
         return false;
 		}
 
     // 不能重复出现
-		if (m_is_stacksize_found)
+		if (SyntaxVarible::Instance()->m_is_stacksize_found)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_MULTIPLE_SETSTACKSIZES);
         return false;
@@ -192,14 +194,16 @@ bool SyntaxParserPhase1::parse_stacksize( XASM::CTokenStream &token_stream,
         return false;
 		}
 
-		// m_header.stack_size = atoi(token_ptr->lexeme.c_str());
-		m_is_stacksize_found = true;
+		SyntaxVarible::Instance()->m_header.stack_size = atoi(token_ptr->lexeme.c_str());
+		SyntaxVarible::Instance()->m_is_stacksize_found = true;
 		return true;
 }
 
+// 解析变量定义操作符
 bool SyntaxParserPhase1::parse_var( XASM::CTokenStream &token_stream,
                                     shared_ptr<XASM::SToken> &token_ptr )
 {
+    // 接下来必须是标识符
 		token_ptr = token_stream.next_token();
 		if (TOKEN_TYPE_IDENTIFY != token_ptr->type)
 		{
@@ -207,13 +211,16 @@ bool SyntaxParserPhase1::parse_var( XASM::CTokenStream &token_stream,
         return false;
 		}
 
-		int size = 1;
+    // 根据下一个属性符区分处理，因为可能是 var v 或者 var v[10]
+		int size = 1;    // 变量个数，若为数组则为数组元素个数，单个变量为1
 		auto next_token = token_stream.peek_next_token();
 		if (TOKEN_TYPE_OPEN_BRACKET == next_token->type)
 		{
+        // 如果是左中括号，则表示是定义数组
         next_token = token_stream.next_token();
         next_token = token_stream.next_token();
 
+        // 必须是整数, 且大于0
         if (TOKEN_TYPE_INT != next_token->type)
         {
             CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_INVALID_ARRAY_SIZE);
@@ -227,6 +234,7 @@ bool SyntaxParserPhase1::parse_var( XASM::CTokenStream &token_stream,
             return false;
         }
 
+        // 必须紧跟右中括号
         next_token = token_stream.next_token();
         if (TOKEN_TYPE_CLOSE_BRACKET != next_token->type)
         {
@@ -235,38 +243,43 @@ bool SyntaxParserPhase1::parse_var( XASM::CTokenStream &token_stream,
         }
 		}
 
-		int stack_index = m_is_func_active ? -(m_curr_func_local_data_size + 2) 
-                      : m_header.global_data_size;
+    // 全局变量和局部变量索引计算方式不同
+		int stack_index = SyntaxVarible::Instance()->m_is_func_active ? -(SyntaxVarible::Instance()->m_curr_func_local_data_size + 2) 
+                      : SyntaxVarible::Instance()->m_header.global_data_size;
 
 		if (-1 == CSymbolTable::Instance()->add(token_ptr->lexeme,
                                             size,
                                             stack_index,
-                                            m_curr_func_index))
+                                            SyntaxVarible::Instance()->m_curr_func_index))
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_IDENT_REDEFINITION);
         return false;
 		}
 
-		if (m_is_func_active)
+    // 增加index计数
+		if (SyntaxVarible::Instance()->m_is_func_active)
 		{
-        m_curr_func_local_data_size += size;
+        SyntaxVarible::Instance()->m_curr_func_local_data_size += size;
 		}
 		else
 		{
-        m_header.global_data_size += size;
+        SyntaxVarible::Instance()->m_header.global_data_size += size;
 		}
 		return true;
 }
 
+// 解析函数定义操作符
 bool SyntaxParserPhase1::parse_func( XASM::CTokenStream &token_stream,
                                      shared_ptr<XASM::SToken> &token_ptr )
 {
-		if (m_is_func_active)
+    // 不能在函数中定义函数
+		if (SyntaxVarible::Instance()->m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_NESTED_FUNC);
         return false;
 		}
 
+    // 必须为标识符
 		token_ptr = token_stream.next_token();
 		if (TOKEN_TYPE_IDENTIFY != token_ptr->type)
 		{
@@ -274,8 +287,9 @@ bool SyntaxParserPhase1::parse_func( XASM::CTokenStream &token_stream,
         return false;
 		}
 
+    // 添加到函数表
 		string str_name = token_ptr->lexeme;
-		int entry_point = m_instr_stream_size;
+		int entry_point = SyntaxVarible::Instance()->m_instr_stream_size;
 		int func_index = CFunctionTable::Instance()->add(str_name, entry_point);
 		if (-1 == func_index)
 		{
@@ -283,24 +297,27 @@ bool SyntaxParserPhase1::parse_func( XASM::CTokenStream &token_stream,
         return false;
 		}
 
+    // 是否为主函数, 此处不用考虑重复主函数，如若重复则必会添加失败
 		if (MAIN_FUNC_NAME == str_name)
 		{
-        m_header.is_mainfunc_present = true;
-        m_header.mainfunc_index = func_index;
+        SyntaxVarible::Instance()->m_header.is_mainfunc_present = true;
+        SyntaxVarible::Instance()->m_header.mainfunc_index = func_index;
 		}
 
-		m_is_func_active = true;
-		m_curr_func_name = str_name;
-		m_curr_func_index = func_index;
-		m_curr_func_param_count = 0;
-		m_curr_func_local_data_size = 0;
+		SyntaxVarible::Instance()->m_is_func_active = true;
+    SyntaxVarible::Instance()->m_curr_func_name = str_name;
+    SyntaxVarible::Instance()->m_curr_func_index = func_index;
+  	SyntaxVarible::Instance()->m_curr_func_param_count = 0;
+  	SyntaxVarible::Instance()->m_curr_func_local_data_size = 0;
 
+    // 跳转到下一行
 		token_ptr = token_stream.next_token();
 		while (token_ptr && TOKEN_TYPE_NEWLINE == token_ptr->type)
 		{
         token_ptr = token_stream.next_token();
 		};
 
+    // 必须为左大括号
 		if (!token_ptr || TOKEN_TYPE_OPEN_BRACE != token_ptr->type)
 		{
         CErrorReporter::Instance()->exit_on_char_expected_error('{');
@@ -308,23 +325,27 @@ bool SyntaxParserPhase1::parse_func( XASM::CTokenStream &token_stream,
 		}
 
 		// 在FUNC的结果会自动添加RET指令，所以此处需要++
-		++m_instr_stream_size;
+		++SyntaxVarible::Instance()->m_instr_stream_size;
 		return true;
 }
 
+// 解析函数参数指令
 bool SyntaxParserPhase1::parse_param( XASM::CTokenStream &token_stream,
                                       shared_ptr<XASM::SToken> &token_ptr )
 {
-		if (!m_is_func_active)
+    // 必须在函数中
+		if (!SyntaxVarible::Instance()->m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_GLOBAL_PARAM);
 		}
 
-		if (m_curr_func_name == MAIN_FUNC_NAME)
+    // 不能在主函数中定义参数
+		if (SyntaxVarible::Instance()->m_curr_func_name == MAIN_FUNC_NAME)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_MAIN_PARAM);
 		}
 
+    // 必须为标识符
 		token_ptr = token_stream.next_token();
 		if (TOKEN_TYPE_IDENTIFY != token_ptr->type)
 		{
@@ -332,13 +353,15 @@ bool SyntaxParserPhase1::parse_param( XASM::CTokenStream &token_stream,
         return false;
 		}
 
-		++m_curr_func_param_count;
+		++SyntaxVarible::Instance()->m_curr_func_param_count;
 		return true;
 }
 
+// 默认解析函数
 bool SyntaxParserPhase1::parse_default( XASM::CTokenStream &token_stream,
                                         shared_ptr<XASM::SToken> &token_ptr )
 {
+    // 必须是换行属性符
 		if (TOKEN_TYPE_NEWLINE != token_ptr->type)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_INVALID_INPUT);
