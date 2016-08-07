@@ -67,24 +67,19 @@ SyntaxParserPhase1::ParseFuncType SyntaxParserPhase1::get_parse_func(ETokenType 
 
 bool SyntaxParserPhase1::parse( XASM::CTokenStream &token_stream )
 {
-		m_instr_stream_size = 0;
-		m_is_stacksize_found = false;
-		m_is_func_active = false;
-		m_curr_func_local_data_size = 0;
-		m_curr_func_index = 0;
-		m_curr_func_name.clear();
-		m_curr_func_param_count = 0;
-
+    SyntaxVarible::Instance()->reset();
     token_stream.reset();
 
     auto token_ptr = token_stream.next_token();
 		while (token_ptr)
 		{
+        // 到达属性符流末尾
         if (TOKEN_TYPE_END_OF_STREAM == token_ptr->type)
         {
             return true;
         }
 
+        // 针对不同的属性符调用不同的处理函数
         auto functor = get_parse_func(token_ptr->type);
         if (!functor(token_stream, token_ptr))
         {
@@ -104,22 +99,27 @@ bool SyntaxParserPhase1::parse( XASM::CTokenStream &token_stream )
     return true;
 }
 
+// 解析标识符属性, 此处的标识符是作为标号的，作为变量的标识符应该在其他指令中处理
 bool SyntaxParserPhase1::parse_identify( XASM::CTokenStream &token_stream,
                                          shared_ptr<XASM::SToken> &token_ptr )
 {
 		auto next_token = token_stream.next_token();
+
+    // 标识符后必须跟随冒号
 		if (TOKEN_TYPE_COLON != next_token->type)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_INVALID_INSTR);
         return false;
 		}
 
+    // 标号必须在函数中
 		if (!m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_GLOBAL_LINE_LABEL);
         return false;
 		}
 
+    // 添加到标号表中
 		if (-1 == CLabelTable::Instance()->add(token_ptr->lexeme,
                                            m_instr_stream_size - 1,
                                            m_curr_func_index))
@@ -131,9 +131,11 @@ bool SyntaxParserPhase1::parse_identify( XASM::CTokenStream &token_stream,
 		return true;
 }
 
+// 解析右大括号
 bool SyntaxParserPhase1::parse_close_brace( XASM::CTokenStream &token_stream,
                                             shared_ptr<XASM::SToken> &token_ptr )
 {
+    // 右大括号只用于函数体
 		if (!m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_char_expected_error('}');
@@ -144,13 +146,16 @@ bool SyntaxParserPhase1::parse_close_brace( XASM::CTokenStream &token_stream,
                                               m_curr_func_param_count,
                                               m_curr_func_local_data_size);
 
+    // 函数体结束
 		m_is_func_active = false;
 		return true;
 }
 
+// 解析指令, 此处只统计指令数量
 bool SyntaxParserPhase1::parse_instruction( XASM::CTokenStream &token_stream,
                                             shared_ptr<XASM::SToken> &token_ptr )
 {
+    // 指令必须在函数中
 		if (!m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_GLOBAL_INSTR);
@@ -161,21 +166,25 @@ bool SyntaxParserPhase1::parse_instruction( XASM::CTokenStream &token_stream,
 		return true;
 }
 
+// 解析SET_STACKSIZE 命令
 bool SyntaxParserPhase1::parse_stacksize( XASM::CTokenStream &token_stream,
                                           shared_ptr<XASM::SToken> &token_ptr )
 {
+    // 不能在函数中
 		if (m_is_func_active)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_LOCAL_SETSTACKSIZE);
         return false;
 		}
 
+    // 不能重复出现
 		if (m_is_stacksize_found)
 		{
         CErrorReporter::Instance()->exit_on_error(ERROR_MSSG_MULTIPLE_SETSTACKSIZES);
         return false;
 		}
 
+    // 接下来必须是整数值
 		auto next_token = token_stream.peek_next_token();
 		if (TOKEN_TYPE_INT != next_token->type)
 		{
