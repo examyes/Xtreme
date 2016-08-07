@@ -22,7 +22,6 @@ namespace detail
 SyntaxParserPhase1::ParseFuncType SyntaxParserPhase1::get_parse_func(ETokenType token_type) const
 {
     using TokenFuncMap = map<ETokenType, ParseFuncType>;
-
 		static TokenFuncMap token_func_map = {
         {
             TOKEN_TYPE_IDENTIFY,
@@ -340,20 +339,11 @@ bool SyntaxParserPhase1::parse_default( XASM::CTokenStream &token_stream,
 		return true;
 }
 
-bool SyntaxParserPhase2::parse( XASM::CTokenStream &token_stream,
-                                XASM::CInstrStream &instr_stream )
+SyntaxParserPhase2::ParseFuncType SyntaxParserPhase2::get_parse_func(ETokenType token_type) const
 {
-		m_instr_stream_size = 0;
-		m_is_stacksize_found = false;
-		m_is_func_active = false;
-		m_curr_func_local_data_size = 0;
-		m_curr_func_index = 0;
-		m_curr_func_name.clear();
-		m_curr_func_param_count = 0;
 
-		token_stream.reset();
-    using TokenFuncMap = map<ETokenType, function<bool(CTokenStream&, shared_ptr<SToken>&, CInstrStream&)>>;
-		static TokenFuncMap token_func_map = {
+    using TokenFuncMap = map<ETokenType, ParseFuncType>;
+    static TokenFuncMap token_func_map = {
         {
             TOKEN_TYPE_CLOSE_BRACE,
             bind(&SyntaxParserPhase2::parse_close_brace, this, _1, _2, _3)
@@ -370,7 +360,29 @@ bool SyntaxParserPhase2::parse( XASM::CTokenStream &token_stream,
             TOKEN_TYPE_PARAM,
             bind(&SyntaxParserPhase2::parse_param, this, _1, _2, _3)
         }
-		};
+    };
+
+    auto map_itor = token_func_map.find(token_type);
+    if (token_func_map.end() != map_itor)
+    {
+        return map_itor->second;
+    }
+
+    return ParseFuncType();
+}
+
+bool SyntaxParserPhase2::parse( XASM::CTokenStream &token_stream,
+                                XASM::CInstrStream &instr_stream )
+{
+		m_instr_stream_size = 0;
+		m_is_stacksize_found = false;
+		m_is_func_active = false;
+		m_curr_func_local_data_size = 0;
+		m_curr_func_index = 0;
+		m_curr_func_name.clear();
+		m_curr_func_param_count = 0;
+
+		token_stream.reset();
 
 		auto token_ptr = token_stream.next_token();
 		while (token_ptr)
@@ -380,14 +392,10 @@ bool SyntaxParserPhase2::parse( XASM::CTokenStream &token_stream,
             return true;
         }
 
-        auto map_itor = token_func_map.find(token_ptr->type);
-        if (token_func_map.end() != map_itor)
+        auto functor = get_parse_func(token_ptr->type);
+        if (functor && (!functor(token_stream, token_ptr, instr_stream)))
         {
-            auto functor = map_itor->second;
-            if (!functor(token_stream, token_ptr, instr_stream))
-            {
-                return false;
-            }
+            return false;
         }
 
         /// 此处需要的是跳转到下一行....但是不合理啊~~~

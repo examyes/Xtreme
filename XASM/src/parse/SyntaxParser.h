@@ -64,6 +64,11 @@ struct SyntaxParserPhase2
 		bool parse_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 		bool parse_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 		bool parse_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
+
+private:
+    using ParseFuncType = function<bool(CTokenStream&, shared_ptr<SToken>&, CInstrStream&)>;
+
+    ParseFuncType get_parse_func(ETokenType token_type) const;
 };
 
 }
