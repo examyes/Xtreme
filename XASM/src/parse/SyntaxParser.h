@@ -95,22 +95,6 @@ public:
  private:
 		CSyntaxParser(void){};
 		~CSyntaxParser(void){};
-
-		bool parse_phase_1(CTokenStream& token_stream);
-		bool phase_1_identify(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_1_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_1_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_1_stacksize(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_1_var(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_1_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_1_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-		bool phase_1_default(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr);
-
-		bool parse_phase_2(CTokenStream& token_stream, CInstrStream& instr_stream);
-		bool phase_2_func(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
-		bool phase_2_param(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
-		bool phase_2_close_brace(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
-		bool phase_2_instruction(CTokenStream& token_stream, shared_ptr<SToken>& token_ptr, CInstrStream& instr_stream);
 };
 
 }
