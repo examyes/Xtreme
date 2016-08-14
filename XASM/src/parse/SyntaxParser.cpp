@@ -441,6 +441,21 @@ bool SyntaxParserPhase2::parse_func( XASM::CTokenStream &token_stream,
                                      shared_ptr<XASM::SToken> &token_ptr,
                                      XASM::CInstrStream &instr_stream )
 {
+    // 获取下一个token, 即函数名
+    token_ptr = token_stream.next_token();
+    auto&& func_ptr = CFunctionTable::Instance()->get_func_by_name(token_ptr->lexeme);
+
+    SyntaxVarible::Instance()->m_is_func_active = true;
+    SyntaxVarible::Instance()->m_curr_func_param_count = 0;
+    SyntaxVarible::Instance()->m_curr_func_index = func_ptr->index;
+    SyntaxVarible::Instance()->m_curr_func_name = func_ptr->name;
+
+    token_ptr = token_stream.next_token();
+    while(token_ptr->type == TOKEN_TYPE_NEWLINE)
+    {
+        token_ptr = token_stream.next_token();
+    }
+
     return true;
 }
 
@@ -455,11 +470,33 @@ bool SyntaxParserPhase2::parse_close_brace( XASM::CTokenStream &token_stream,
                                             shared_ptr<XASM::SToken> &token_ptr,
                                             XASM::CInstrStream &instr_stream )
 {
+    SyntaxVarible::Instance()->m_is_func_active = false;
+    if (SyntaxVarible::Instance()->m_curr_func_name == MAIN_FUNC_NAME)
+    {
+        SInstr ins;
+        ins.op_code = INSTR_EXIT;
+        ins.op_count = 1;
+
+        SOperand op;
+        op.type = OP_FLAG_TYPE_INT;
+        op.int_literal = 0;
+        ins.ops.push_back(op);
+
+        instr_stream.push_back(ins);
+    }
+    else
+    {
+        SInstr ins;
+        ins.op_code = INSTR_RET;
+        ins.op_count = 0;
+
+        instr_stream.push_back(ins);
+    }
+
     return true;
 }
 
-bool SyntaxParserPhase2::parse_instruction( XASM::CTokenStream &token_stream,
-                                            shared_ptr<XASM::SToken> &token_ptr,
+bool SyntaxParserPhase2::parse_instruction( XASM::CTokenStream &token_stream, shared_ptr<XASM::SToken> &token_ptr,
                                             XASM::CInstrStream &instr_stream )
 {
     return true;
