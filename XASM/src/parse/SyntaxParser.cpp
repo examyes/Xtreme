@@ -449,6 +449,7 @@ bool SyntaxParserPhase2::parse_func( XASM::CTokenStream &token_stream,
     SyntaxVarible::Instance()->m_curr_func_param_count = 0;
     SyntaxVarible::Instance()->m_curr_func_index = func_ptr->index;
     SyntaxVarible::Instance()->m_curr_func_name = func_ptr->name;
+    SyntaxVarible::Instance()->m_curr_func_local_data_size = func_ptr->localdata_size;
 
     token_ptr = token_stream.next_token();
     while(token_ptr->type == TOKEN_TYPE_NEWLINE)
@@ -463,6 +464,24 @@ bool SyntaxParserPhase2::parse_param( XASM::CTokenStream &token_stream,
                                       shared_ptr<XASM::SToken> &token_ptr,
                                       XASM::CInstrStream &instr_stream )
 {
+    token_ptr = token_stream.next_token();
+    if (token_ptr->type != TOKEN_TYPE_IDENTIFY)
+    {
+        CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_IDENT_EXPECTED, token_ptr->row, token_ptr->file_name.c_str());
+    }
+
+    int stack_index = -(SyntaxVarible::Instance()->m_curr_func_local_data_size + 2 + (SyntaxVarible::Instance()->m_curr_func_param_count + 1));
+
+    if (-1 == CSymbolTable::Instance()->add(token_ptr->lexeme,
+                                            1,
+                                            stack_index,
+                                            SyntaxVarible::Instance()->m_curr_func_index))
+    {
+        CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_IDENT_REDEFINITION,token_ptr->row, token_ptr->file_name.c_str());
+    }
+
+    ++SyntaxVarible::Instance()->m_curr_func_param_count;
+
     return true;
 }
 
@@ -499,7 +518,7 @@ bool SyntaxParserPhase2::parse_close_brace( XASM::CTokenStream &token_stream,
 bool SyntaxParserPhase2::parse_instruction( XASM::CTokenStream &token_stream, shared_ptr<XASM::SToken> &token_ptr,
                                             XASM::CInstrStream &instr_stream )
 {
-    return true;
+   return true;
 }
 
 }
