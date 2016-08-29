@@ -518,7 +518,41 @@ bool SyntaxParserPhase2::parse_close_brace( XASM::CTokenStream &token_stream,
 bool SyntaxParserPhase2::parse_instruction( XASM::CTokenStream &token_stream, shared_ptr<XASM::SToken> &token_ptr,
                                             XASM::CInstrStream &instr_stream )
 {
-   return true;
+    auto instr_ptr = CInstrLookupTable::Instance()->get_instr_by_mnemonic(token_ptr->lexeme);
+    if (!instr_ptr){
+        return false;
+    }
+
+    SInstr ins;
+    ins.op_code = instr_ptr->op_code;
+    ins.op_count = instr_ptr->op_count;
+
+    for (int index = 0; index < ins.op_count; ++index)
+    {
+        OpTypes op_type = instr_ptr->ops[index];
+
+        token_ptr = token_stream.next_token();
+        switch(token_ptr->type)
+        {
+            case TOKEN_TYPE_INT:
+                if (op_type & OP_FLAG_TYPE_INT)
+                {
+                    SOperand op;
+                    op.type = OP_FLAG_TYPE_INT;
+                    op.int_literal = stoi(token_ptr->lexeme);
+                    ins.ops.push_back(op);
+                }
+                else
+                {
+                    CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
+                                                                   token_ptr->row,
+                                                                   token_ptr->file_name.c_str());
+                }
+                break;
+        }
+    }
+
+    return true;
 }
 
 }
