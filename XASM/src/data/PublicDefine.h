@@ -122,6 +122,20 @@ enum EOpType
 		OP_FLAG_TYPE_REG = 0x00000080				// 寄存器，即_RetVal
 };
 
+/// 汇编结果---操作数类型
+enum EAsmOpType
+{
+    OP_TYPE_INT = 0,                        // 整形字面量
+    OP_TYPE_FLOAT = 1,                      // 浮点型字面量
+    OP_TYPE_STRING_INDEX = 2,               // 字符串字面量, 存储字符串表索引
+    OP_TYPE_ABS_STACK_INDEX = 3,            // 栈上绝对索引值
+    OP_TYPE_REL_STACK_INDEX = 4,            // 栈上相对索引值
+    OP_TYPE_INSTR_INDEX = 5,                // 指令索引
+    OP_TYPE_FUNC_INDEX = 6,                 // 函数表索引
+    OP_TYPE_HOST_API_CALL_INDEX = 7,        // HostAPI
+    OP_TYPE_REG = 8                         // 寄存器
+};
+
 /// 查找指令
 struct SInstrLookup
 {
