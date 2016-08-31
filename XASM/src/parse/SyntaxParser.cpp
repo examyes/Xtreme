@@ -536,190 +536,190 @@ bool SyntaxParserPhase2::parse_instruction( XASM::CTokenStream &token_stream,
         token_ptr = token_stream.next_token();
         switch(token_ptr->type)
         {
-            case TOKEN_TYPE_INT:
-                if (op_type & OP_FLAG_TYPE_INT)
+        case TOKEN_TYPE_INT:
+            if (op_type & OP_FLAG_TYPE_INT)
+            {
+                SOperand op;
+                op.type = OP_TYPE_INT;
+                op.int_literal = stoi(token_ptr->lexeme);
+                ins.ops.push_back(op);
+            }
+            else
+            {
+                CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
+                                                               token_ptr->row,
+                                                               token_ptr->file_name.c_str());
+            }
+            break;
+        case TOKEN_TYPE_FLOAT:
+            if (op_type & OP_FLAG_TYPE_FLOAT)
+            {
+                SOperand op;
+                op.type = OP_TYPE_FLOAT;
+                op.float_literal = stof(token_ptr->lexeme);
+                ins.ops.push_back(op);
+            }
+            else
+            {
+                CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
+                                                               token_ptr->row,
+                                                               token_ptr->file_name.c_str());
+            }
+            break;
+        case TOKEN_TYPE_QUOTE:
+            if (op_type & OP_FLAG_TYPE_STRING)
+            {
+                token_ptr = token_stream.next_token();
+                switch(token_ptr->type)
                 {
-                    SOperand op;
-                    op.type = OP_TYPE_INT;
-                    op.int_literal = stoi(token_ptr->lexeme);
-                    ins.ops.push_back(op);
-                }
-                else
-                {
-                    CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
-                                                                   token_ptr->row,
-                                                                   token_ptr->file_name.c_str());
-                }
-                break;
-            case TOKEN_TYPE_FLOAT:
-                if (op_type & OP_FLAG_TYPE_FLOAT)
-                {
-                    SOperand op;
-                    op.type = OP_TYPE_FLOAT;
-                    op.float_literal = stof(token_ptr->lexeme);
-                    ins.ops.push_back(op);
-                }
-                else
-                {
-                    CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
-                                                                   token_ptr->row,
-                                                                   token_ptr->file_name.c_str());
-                }
-                break;
-            case TOKEN_TYPE_QUOTE:
-                if (op_type & OP_FLAG_TYPE_STRING)
-                {
-                    token_ptr = token_stream.next_token();
-                    switch(token_ptr->type)
-                    {
-                        case TOKEN_TYPE_QUOTE:
+                    case TOKEN_TYPE_QUOTE:
+                        {
+                            SOperand op;
+                            op.type = OP_TYPE_INT;
+                            op.int_literal = 0;
+                            ins.ops.push_back(op);
+                            break;
+                        }
+                    case TOKEN_TYPE_STRING:
+                        {
+                            int string_index = CStringTable::Instance()->add(token_ptr->lexeme);
+                            token_ptr = token_stream.next_token();
+                            if (token_ptr->type != TOKEN_TYPE_QUOTE)
                             {
-                                SOperand op;
-                                op.type = OP_TYPE_INT;
-                                op.int_literal = 0;
-                                ins.ops.push_back(op);
-                                break;
+                                CErrorReporter::Instance()->exit_on_char_expected_error('\\');
                             }
-                        case TOKEN_TYPE_STRING:
-                            {
-                                int string_index = CStringTable::Instance()->add(token_ptr->lexeme);
-                                token_ptr = token_stream.next_token();
-                                if (token_ptr->type != TOKEN_TYPE_QUOTE)
-                                {
-                                    CErrorReporter::Instance()->exit_on_char_expected_error('\\');
-                                }
 
-                                SOperand op;
-                                op.type = OP_TYPE_STRING_INDEX;
-                                op.string_table_index = string_index;
-                                ins.ops.push_back(op);
-                                break;
-                            }
-                        default:
-                            CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_STRING,
-                                                                           token_ptr->row,
-                                                                           token_ptr->lexeme.c_str());
-                    }
+                            SOperand op;
+                            op.type = OP_TYPE_STRING_INDEX;
+                            op.string_table_index = string_index;
+                            ins.ops.push_back(op);
+                            break;
+                        }
+                    default:
+                        CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_STRING,
+                                                                       token_ptr->row,
+                                                                       token_ptr->lexeme.c_str());
                 }
-                else
+            }
+            else
+            {
+                CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
+                                                               token_ptr->row,
+                                                               token_ptr->lexeme.c_str());
+            }
+            break;
+        case TOKEN_TYPE_REG_RETVAL:
+            if (op_type & OP_FLAG_TYPE_REG)
+            {
+                SOperand op;
+                op.type = OP_TYPE_REG;
+                op.reg = 0;
+                ins.ops.push_back(op);
+            }
+            else
+            {
+                CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
+                                                               token_ptr->row,
+                                                               token_ptr->lexeme.c_str());
+            }
+            break;
+        case TOKEN_TYPE_IDENTIFY:
+            if (op_type & OP_FLAG_TYPE_MEM_REF)
+            {
+                if (CSymbolTable::Instance()->get_symbol_by_ident(token_ptr->lexeme,
+                                                                  SyntaxVarible::Instance()->m_curr_func_index))
                 {
-                    CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
+                    CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_UNDEFINED_IDENT,
                                                                    token_ptr->row,
                                                                    token_ptr->lexeme.c_str());
                 }
-                break;
-            case TOKEN_TYPE_REG_RETVAL:
-                if (op_type & OP_FLAG_TYPE_REG)
+
+                int base_index = CSymbolTable::Instance()->get_stack_index_by_ident(token_ptr->lexeme,
+                                                                                    SyntaxVarible::Instance()->m_curr_func_index);
+
+                if (token_stream.peek_next_token()->type != TOKEN_TYPE_OPEN_BRACKET)
                 {
-                    SOperand op;
-                    op.type = OP_TYPE_REG;
-                    op.reg = 0;
-                    ins.ops.push_back(op);
-                }
-                else
-                {
-                    CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_OP,
-                                                                   token_ptr->row,
-                                                                   token_ptr->lexeme.c_str());
-                }
-                break;
-            case TOKEN_TYPE_IDENTIFY:
-                if (op_type & OP_FLAG_TYPE_MEM_REF)
-                {
-                    if (CSymbolTable::Instance()->get_symbol_by_ident(token_ptr->lexeme,
-                                                                      SyntaxVarible::Instance()->m_curr_func_index))
+                    if (CSymbolTable::Instance()->get_size_by_ident(token_ptr->lexeme,
+                                                                    SyntaxVarible::Instance()->m_curr_func_index) > 1)
                     {
-                        CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_UNDEFINED_IDENT,
+                        CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_ARRAY_NOT_INDEXED,
                                                                        token_ptr->row,
                                                                        token_ptr->lexeme.c_str());
                     }
 
-                    int base_index = CSymbolTable::Instance()->get_stack_index_by_ident(token_ptr->lexeme,
-                                                                                        SyntaxVarible::Instance()->m_curr_func_index);
-
-                    if (token_stream.peek_next_token()->type != TOKEN_TYPE_OPEN_BRACKET)
+                    SOperand op;
+                    op.type = OP_TYPE_ABS_STACK_INDEX;
+                    op.int_literal = base_index;
+                    ins.ops.push_back(op);
+                }
+                else
+                {
+                    if (CSymbolTable::Instance()->get_size_by_ident(token_ptr->lexeme,
+                                                                    SyntaxVarible::Instance()->m_curr_func_index) == 1)
                     {
+                        CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_ARRAY,
+                                                                       token_ptr->row,
+                                                                       token_ptr->lexeme.c_str());
+                    }
+
+                    token_ptr = token_stream.next_token();
+                    if (TOKEN_TYPE_OPEN_BRACKET != token_ptr->type)
+                    {
+                        CErrorReporter::Instance()->exit_on_char_expected_error('[');
+                    }
+
+                    token_ptr = token_stream.next_token();
+                    if (TOKEN_TYPE_INT == token_ptr->type)
+                    {
+                        int offset_index = stoi(token_ptr->lexeme);
+
+                        SOperand op;
+                        op.type = OP_TYPE_ABS_STACK_INDEX;
+                        op.stack_index = base_index + offset_index;
+                        ins.ops.push_back(op);
+                    }
+                    else if(TOKEN_TYPE_IDENTIFY == token_ptr->type)
+                    {
+                        if (!CSymbolTable::Instance()->get_symbol_by_ident(token_ptr->lexeme,
+                                                                           SyntaxVarible::Instance()->m_curr_func_index))
+                        {
+                            CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_UNDEFINED_IDENT,
+                                                                           token_ptr->row,
+                                                                           token_ptr->lexeme.c_str());
+                        }
+
                         if (CSymbolTable::Instance()->get_size_by_ident(token_ptr->lexeme,
-                                                                        SyntaxVarible::Instance()->m_curr_func_index) > 1)
+                                                                        SyntaxVarible::Instance()->m_curr_func_index))
                         {
                             CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_ARRAY_NOT_INDEXED,
                                                                            token_ptr->row,
                                                                            token_ptr->lexeme.c_str());
                         }
 
+                        int offset_index = CSymbolTable::Instance()->get_stack_index_by_ident(token_ptr->lexeme,
+                                                                                              SyntaxVarible::Instance()->m_curr_func_index);
+
                         SOperand op;
-                        op.type = OP_TYPE_ABS_STACK_INDEX;
-                        op.int_literal = base_index;
+                        op.type = OP_TYPE_REL_STACK_INDEX;
+                        op.stack_index = base_index;
+                        op.offset_index = offset_index;
                         ins.ops.push_back(op);
                     }
                     else
                     {
-                        if (CSymbolTable::Instance()->get_size_by_ident(token_ptr->lexeme,
-                                                                        SyntaxVarible::Instance()->m_curr_func_index) == 1)
-                        {
-                            CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_ARRAY,
-                                                                           token_ptr->row,
-                                                                           token_ptr->lexeme.c_str());
-                        }
+                        CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_ARRAY_NOT_INDEXED,
+                                                                       token_ptr->row,
+                                                                       token_ptr->lexeme.c_str());
+                    }
 
-                        token_ptr = token_stream.next_token();
-                        if (TOKEN_TYPE_OPEN_BRACKET != token_ptr->type)
-                        {
-                            CErrorReporter::Instance()->exit_on_char_expected_error('[');
-                        }
-
-                        token_ptr = token_stream.next_token();
-                        if (TOKEN_TYPE_INT == token_ptr->type)
-                        {
-                            int offset_index = stoi(token_ptr->lexeme);
-
-                            SOperand op;
-                            op.type = OP_TYPE_ABS_STACK_INDEX;
-                            op.stack_index = base_index + offset_index;
-                            ins.ops.push_back(op);
-                        }
-                        else if(TOKEN_TYPE_IDENTIFY == token_ptr->type)
-                        {
-                            if (!CSymbolTable::Instance()->get_symbol_by_ident(token_ptr->lexeme,
-                                                                               SyntaxVarible::Instance()->m_curr_func_index))
-                            {
-                                CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_UNDEFINED_IDENT,
-                                                                               token_ptr->row,
-                                                                               token_ptr->lexeme.c_str());
-                            }
-
-                            if (CSymbolTable::Instance()->get_size_by_ident(token_ptr->lexeme,
-                                                                            SyntaxVarible::Instance()->m_curr_func_index))
-                            {
-                                CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_ARRAY_NOT_INDEXED,
-                                                                               token_ptr->row,
-                                                                               token_ptr->lexeme.c_str());
-                            }
-
-                            int offset_index = CSymbolTable::Instance()->get_stack_index_by_ident(token_ptr->lexeme,
-                                                                                                  SyntaxVarible::Instance()->m_curr_func_index);
-
-                            SOperand op;
-                            op.type = OP_TYPE_REL_STACK_INDEX;
-                            op.stack_index = base_index;
-                            op.offset_index = offset_index;
-                            ins.ops.push_back(op);
-                        }
-                        else
-                        {
-                            CErrorReporter::Instance()->exit_on_code_error(ERROR_MSSG_INVALID_ARRAY_NOT_INDEXED,
-                                                                           token_ptr->row,
-                                                                           token_ptr->lexeme.c_str());
-                        }
-
-                        token_ptr = token_stream.next_token();
-                        if (TOKEN_TYPE_CLOSE_BRACKET != token_ptr->type)
-                        {
-                            CErrorReporter::Instance()->exit_on_char_expected_error(']');
-                        }
+                    token_ptr = token_stream.next_token();
+                    if (TOKEN_TYPE_CLOSE_BRACKET != token_ptr->type)
+                    {
+                        CErrorReporter::Instance()->exit_on_char_expected_error(']');
                     }
                 }
-                break;
+            }
+            break;
         }
     }
     return true;
